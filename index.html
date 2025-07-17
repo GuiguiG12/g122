@@ -13,7 +13,7 @@
     @media (min-width: 62em) { html { font-size: 1.125rem; /*18px*/ } }
 
     :root {
-      --color-bg: #000;
+      --color-bg: #000000;
       --color-text: #E0E0E0;
       --color-white: #FFF;
       --color-primary: #59bbaa;
@@ -56,7 +56,7 @@
     body>*:not(nav){transition:filter .3s}
     body.nav-open>*:not(nav){filter:blur(var(--blur-level));pointer-events:none}
 
-    /* Hero shapes */
+/* Hero shapes */
     section.hero{position:relative;height:100vh;overflow:hidden}
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
     @keyframes pulse-slow{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
@@ -67,9 +67,9 @@
     .shape-overlay-extra{position:absolute;width:18rem;height:18rem;background:var(--color-secondary);border-radius:50%;filter:blur(7rem);animation:pulse-slow 24s ease-in-out infinite 18s;bottom:-10rem;right:-12rem}
     .shape-overlay-extra2{position:absolute;width:10rem;height:10rem;background:var(--color-secondary);border-radius:50%;filter:blur(7rem);animation:pulse-slow 24s ease-in-out infinite 21s;bottom:-6rem;right:-3rem}
 
-    /* Hero Content */
+  /* Hero Content */
     .hero-content{position:relative;z-index:4;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center;padding:0 var(--spacing)}
-    .hero-content h1{font-size:2rem;margin-bottom:1.5rem;font-weight:700;line-height:1.2;color:var(--color-white)}
+    .hero-content h1{font-size:3rem;margin-bottom:1.9rem;font-weight:700;line-height:1.5;color:var(--color-white)}
     .hero-content h1 span{display:block;opacity:0;transform:translateY(1rem);animation:fadeUp .6s ease forwards}
     .hero-content h1 span:nth-child(1){animation-delay:0.4s}
     .hero-content h1 span:nth-child(2){animation-delay:0.8s}
