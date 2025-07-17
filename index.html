@@ -116,6 +116,283 @@
     .metric-value { font-size: 1.5rem; font-weight:700; color: var(--color-white); }
     .metric-label { font-size: 0.875rem; color: var(--color-text); }
 
+ /* Section Roadmap */
+#roadmap {
+  padding: 4rem 2rem;         /* Extension de l’espace pour meilleure lisibilité */
+  background: var(--color-bg);
+}
+
+#roadmap h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+}
+
+/* Timeline verticale */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ccc;
+}
+
+.timeline li {
+  position: relative;
+  padding: 1rem 0 1rem 60px;
+  margin-bottom: 2rem;       /* Espacement plus important entre chaque étape */
+}
+
+.timeline li::before {
+  display: none;             /* Suppression des points */
+}
+
+.timeline .period {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+/* Bouton en bas à droite */
+.roadmap-footer {
+  margin-top: 2.5rem;
+  text-align: right;
+}
+/* Section Newsletter */
+#newsletter {
+  background: var(--card-bg);
+  padding: 4rem 2rem; 
+}
+
+#newsletter h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: var(--color-white);
+}
+
+#newsletter p {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+/* Container responsive */
+.newsletter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.newsletter-form input {
+  width: 100%;
+  max-width: 350px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--card-radius);
+  font-size: 1rem;
+}
+
+.newsletter-form button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.newsletter-note {
+  font-size: 0.75rem;
+  color: var(--color-text);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* Desktop : deux colonnes */
+@media (min-width: 48em) {
+  .newsletter-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .newsletter-text, 
+  .newsletter-form {
+    flex: 1;
+  }
+  .newsletter-form {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .newsletter-note {
+    margin-top: 0;
+    margin-left: 1rem;
+  }
+}
+/* Section FAQ */
+#faq {
+  padding: 4rem 2rem;
+  background: var(--color-bg);
+}
+#faq h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  color: var(--color-white);
+}
+
+/* Liste d’accordéon */
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.faq-item + .faq-item {
+  margin-top: 1.5rem;
+}
+.question {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-white);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem;
+  position: relative;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.question::after {
+  content: '+';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.25rem;
+  transition: transform 0.3s;
+}
+.faq-item.active .question::after {
+  transform: translateY(-50%) rotate(45deg);
+}
+.question:hover {
+  color: var(--color-primary);
+}
+
+.answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.faq-item.active .answer {
+  max-height: 500px; /* suffisant pour votre contenu */
+}
+
+/* Contenu de la réponse */
+.answer p {
+  padding: 0 1rem 1rem;
+  color: var(--color-text);
+  line-height: 1.6;
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+}
+/* Footer */
+#footer {
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 4rem 2rem 2rem;
+  font-size: 0.875rem;
+}
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+@media (min-width: 48em) {
+  .footer-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+.footer-logo img {
+  height: 2rem;
+}
+.footer-links h3,
+.footer-contact h3,
+.footer-legal-social h3 {
+  font-size: 1rem;
+  color: var(--color-white);
+  margin-bottom: 1rem;
+}
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+.footer-links a:hover {
+  color: var(--color-primary);
+  transition: color 0.3s;
+}
+.footer-contact p {
+  margin: 0.25rem 0;
+}
+.footer-contact a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+.footer-contact a:hover {
+  color: var(--color-primary);
+}
+.footer-legal-social .legal {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+.footer-legal-social .legal li a {
+  font-size: 0.75rem;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.footer-legal-social .legal li a:hover {
+  color: var(--color-primary);
+}
+.social a {
+  margin-right: 1rem;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.social a:hover {
+  color: var(--color-primary);
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: var(--color-text);
+}
+
+
   </style>
 </head>
 <body onload="window.scrollTo(0,0)">
@@ -236,6 +513,112 @@
     </div>
   </section>
 
+<section id="roadmap">
+  <h2>Roadmap</h2>
+  <ul class="timeline">
+    <li>
+      <span class="period">T2–T3 2025</span>
+      <p>Recherche & développement, backtests approfondis et déploiement de l’infrastructure technique</p>
+    </li>
+    <li>
+      <span class="period">T4 2025</span>
+      <p>Lancement du pilote auprès d’investisseurs privés et gestion des premiers capitaux réels</p>
+    </li>
+    <li>
+      <span class="period">T1–T2 2026</span>
+      <p>Ouverture à un public élargi, audit externe et montée en charge de la stratégie</p>
+    </li>
+    <li>
+      <span class="period">À partir de 2026</span>
+      <p>Étude de tokenisation, structuration via SPV/DAO et lancement public</p>
+    </li>
+  </ul>
+  <div class="roadmap-footer">
+  <a href="#about" class="btn btn-primary">Voir documentation</a>
+</div>
+</section>
+ <section id="newsletter">
+  <div class="container newsletter-container">
+    <div class="newsletter-text">
+      <h2>Restez informés</h2>
+      <p>Soyez les premiers à recevoir les actualités du projet, les invitations à la bêta‑test et l’accès prioritaire aux nouvelles fonctionnalités.</p>
+    </div>
+    <form class="newsletter-form">
+      <input type="email" placeholder="votre.email@exemple.com" required>
+      <button type="submit" class="btn btn-primary">S’inscrire</button>
+      <p class="newsletter-note">Nous respectons votre vie privée. Pas de spam, désabonnement facile.</p>
+    </form>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <h2>Questions fréquemment posées</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="question">Qu’est‑ce que G12 ?</button>
+        <div class="answer">
+          <p>G12 est un fonds d’investissement crypto nouvelle génération qui combine une analyse algorithmique avancée et une supervision humaine stratégique pour construire des portefeuilles diversifiés et adaptatifs.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="question">Comment la sécurité du fonds est‑elle assurée ?</button>
+        <div class="answer">
+          <p>Nos actifs sont protégés par une custody multi-signature (Gnosis & Fireblocks), une segmentation des poches (trading, réserve, épargne) et une journalisation infalsifiable. Un audit externe est prévu pour le lancement public.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="question">Comment devenir bêta‑testeur et participer aux tests internes ?</button>
+        <div class="answer">
+          <p>Inscrivez-vous à la newsletter : vous recevrez un lien privilégié pour rejoindre notre phase pilote (T3 2025), accéder au dashboard temps réel et nous faire vos retours.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="question">Quand le fonds sera‑t‑il ouvert au public ?</button>
+        <div class="answer">
+          <p>Après la fin du pilote (T3 2025) et un audit externe (T1–T2 2026), nous visons une ouverture grand public mi‑2026. Les détails seront confirmés par newsletter.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer id="footer">
+  <div class="container footer-container">
+    <div class="footer-logo">
+      <img src="logo-off-blanc.png" alt="Logo G12">
+    </div>
+    <div class="footer-links">
+      <h3>Liens utiles</h3>
+      <ul>
+        <li><a href="#home">Accueil</a></li>
+        <li><a href="#product">Notre produit</a></li>
+        <li><a href="#about">Documentation</a></li>
+        <li><a href="#performance">Performance</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <h3>Contact</h3>
+      <p><a href="mailto:support@g12.finance">support@g12.finance</a></p>
+    </div>
+    <div class="footer-legal-social">
+      <ul class="legal">
+        <li><a href="#terms">Conditions générales</a></li>
+        <li><a href="#privacy">Politique de confidentialité</a></li>
+        <li><a href="#cookies">Cookies</a></li>
+      </ul>
+      <div class="social">
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 G12. Tous droits réservés.</p>
+  </div>
+</footer>
   <script>
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 0));
@@ -244,5 +627,13 @@
       this.setAttribute('aria-expanded', open);
     });
   </script>
+  <script>
+  document.querySelectorAll('#faq .faq-item .question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentNode;
+      item.classList.toggle('active');
+    });
+  });
+</script>
 </body>
 </html>
