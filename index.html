@@ -13,7 +13,7 @@
     @media (min-width: 62em) { html { font-size: 1.125rem; /*18px*/ } }
 
     :root {
-      --color-bg: #000000;
+      --color-bg: #000;
       --color-text: #E0E0E0;
       --color-white: #FFF;
       --color-primary: #59bbaa;
@@ -40,11 +40,11 @@
     .btn-secondary:hover{background:rgba(255,255,255,0.1);transform:scale(1.05)}
 
     /* Nav */
-    nav{position:fixed;top:0;width:100%;z-index:100;background:transparent;transition:background .3s}
+    nav{position:fixed;top:0;width:100%;z-index:5000;background:transparent;transition:background .3s}
     nav.scrolled{background:rgba(1,4,10,0.8);backdrop-filter:blur(0.75rem)}
     .nav-inner{display:flex;justify-content:space-between;align-items:center;padding:var(--spacing)}
     .logo img{height:1.5rem}
-    .nav-toggle{background:none;border:none;cursor:pointer;width:1.5rem;height:1.5rem;z-index:110}
+    .nav-toggle{background:none;border:none;cursor:pointer;width:1.5rem;height:1.5rem;z-index:9999}
     .nav-toggle span{display:block;width:100%;height:0.125rem;background:var(--color-white);margin:0.25rem 0;transition:transform .3s,opacity .3s}
     .nav-container{position:absolute;top:var(--nav-height);right:var(--spacing);display:none;flex-direction:column;gap:1rem;width:calc(100% - 2rem);max-width:20rem;background:rgba(0,0,0,0.6);padding:var(--spacing);border-radius:0.5rem}
     .nav-list{display:flex;flex-direction:column;gap:1rem}
@@ -56,17 +56,15 @@
     body>*:not(nav){transition:filter .3s}
     body.nav-open>*:not(nav){filter:blur(var(--blur-level));pointer-events:none}
 
-/* Hero shapes */
-    section.hero{position:relative;height:100vh;overflow:hidden}
-    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+    /* Hero shapes */
+    section.hero{position:relative;height:100vh;overflow:visible}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
     @keyframes pulse-slow{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-    .hero::before{content:'';position:absolute;border-radius:50%;filter:blur(9rem);background:var(--color-primary);animation:pulse 12s ease-in-out infinite;z-index:1;width:20rem;height:20rem;top:-10rem;left:-5rem}
-    .hero::after{content:'';position:absolute;border-radius:50%;filter:blur(9rem);background:var(--color-primary);animation:pulse 12s ease-in-out infinite 6s;z-index:1;width:30rem;height:30rem;bottom:-15rem;right:-10rem}
-    .shape-overlay::before{content:'';position:absolute;border-radius:50%;filter:blur(7rem);background:var(--color-secondary);animation:pulse-slow 24s ease-in-out infinite;width:18rem;height:18rem;top:-9rem;left:-4rem}
-    .shape-overlay::after{content:'';position:absolute;border-radius:50%;filter:blur(7rem);background:var(--color-secondary);animation:pulse-slow 24s ease-in-out infinite 12s;width:25rem;height:25rem;bottom:-12rem;right:-8rem}
-    .shape-overlay-extra{position:absolute;width:18rem;height:18rem;background:var(--color-secondary);border-radius:50%;filter:blur(7rem);animation:pulse-slow 24s ease-in-out infinite 18s;bottom:-10rem;right:-12rem}
-    .shape-overlay-extra2{position:absolute;width:10rem;height:10rem;background:var(--color-secondary);border-radius:50%;filter:blur(7rem);animation:pulse-slow 24s ease-in-out infinite 21s;bottom:-6rem;right:-3rem}
-
+    .hero::before{content:'';position:absolute;border-radius:50%;filter:blur(9rem);background:var(--color-primary);animation:pulse 12s ease-in-out infinite;width:20rem;height:20rem;top:-10rem;left:-5rem}
+    .hero::after{content:'';position:absolute;border-radius:50%;filter:blur(9rem);background:var(--color-primary);animation:pulse 12s ease-in-out infinite 6s;width:30rem;height:30rem;bottom:-15rem;right:-10rem}
+    .shape-overlay::before{content:'';position:absolute;border-radius:50%;filter:blur(7rem);background:var(--color-secondary);animation:pulse-slow 12s ease-in-out infinite;width:18rem;height:18rem;top:-9rem;left:-4rem;z-index: 1;}
+    .shape-overlay::after{content:'';position:absolute;border-radius:50%;filter:blur(7rem);background:var(--color-secondary);animation:pulse-slow 12s ease-in-out infinite 12s;width:25rem;height:25rem;bottom:-12rem;right:-8rem;z-index: 1;}
+   
   /* Hero Content */
     .hero-content{position:relative;z-index:4;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center;padding:0 var(--spacing)}
     .hero-content h1{font-size:3rem;margin-bottom:1.9rem;font-weight:700;line-height:1.5;color:var(--color-white)}
@@ -80,20 +78,41 @@
     .cta, .cta-secondary{flex:1;padding:0.5rem 0.75rem;font-size:0.875rem}
 
     /* Project Section */
-    .project { background: var(--color-bg); padding: calc(var(--spacing) * 2) 0; }
+    .project { background: var(--color-bg); padding: calc(var(--spacing) * 2) 0;z-index: 1; }
     .project .container { display: flex; flex-direction: column; gap: 1rem; text-align: center; }
-    .project h2 { font-size: 1.75rem; color: var(--color-white); margin-bottom: 0.5rem; }
-    .project p.lead { font-size: 1rem; max-width: 90%; margin: 0 auto 1.5rem; color: var(--color-text); line-height: 1.4; }
+    .project h2 { font-size: 1.75rem; color: var(--color-white); margin-bottom: 0.5rem;z-index: 1; }
+    .project p.lead { font-size: 1rem; max-width: 90%; margin: 0 auto 1.5rem; color: var(--color-text); line-height: 1.4;z-index: 1; }
 
     /* Features Slider on Mobile */
-    .features { display: flex; overflow-x: auto; gap: 1rem; padding-bottom: 1rem; scroll-snap-type: x mandatory; }
-    .features::-webkit-scrollbar { display: none; }
-    .card { position: relative; flex: 0 0 80%; background: var(--card-bg); padding: var(--spacing); border-radius: var(--card-radius); text-align: left; border: 2px solid transparent; border-image: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) 1; scroll-snap-align: start; }
-    .card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.1); border-radius: var(--card-radius); pointer-events: none; }
-    .card .icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
-    .card h3 { font-size: 1.125rem; color: var(--color-white); margin-bottom: 0.5rem; }
-    .card p { font-size: 0.875rem; color: var(--color-text); line-height: 1.4; }
-    @media (min-width: 48em) { .features { display: grid; grid-template-columns: repeat(2,1fr); overflow: visible; scroll-snap-type: none; } .card { flex: none; } }
+ .features {
+  position: relative;
+  width: 100%;
+  height: 300px;            /* hauteur du carousel */
+  perspective: 2000px;
+  transform-style: preserve-3d;
+  overflow: hidden;
+  /* plus de display:flex ! */
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;               /* taille carte centrale */
+  max-width: 300px;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  backface-visibility: hidden;
+  border: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) 1;
+  will-change: transform, filter;
+}
+.features {
+  transform-style: preserve-3d;
+}
+
+
+
 
     /* How It Works Section */
     .steps { background: var(--color-bg); padding: calc(var(--spacing)*2) 0; }
@@ -627,6 +646,55 @@
       this.setAttribute('aria-expanded', open);
     });
   </script>
+ 
+<!-- GSAP Core + CSSPlugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CSSPlugin.min.js"></script>
+<script>
+  gsap.registerPlugin(CSSPlugin);
+
+  (function(){
+    const cards = document.querySelectorAll('.features .card');
+    const total = cards.length;
+    let index = 0;
+    const delay = 3000;
+
+    function updateCoverflow() {
+      cards.forEach((card,i) => {
+        const diff = (i - index + total) % total;
+        let x=0, rotY=0, scale=1, blur=0;
+
+        if (diff === 0) {
+          x=0; rotY=0; scale=1; blur=0;
+        } else if (diff === 1 || diff === total-1) {
+          x     = diff===1 ? -200 : 200;
+          rotY  = diff===1 ?  45  : -45;
+          scale = 0.8; blur = 2;
+        } else {
+          x     = diff<total/2 ? -400 : 400;
+          rotY  = diff<total/2 ?  70  : -70;
+          scale = 0.6; blur = 4;
+        }
+
+        gsap.to(card, {
+          duration: 1,
+          x, rotationY: rotY,
+          scale, filter: `blur(${blur}px)`,
+          ease: 'power3.inOut'
+        });
+      });
+    }
+
+    updateCoverflow();
+    setInterval(() => {
+      index = (index + 1) % total;
+      updateCoverflow();
+    }, delay);
+  })();
+</script>
+
+
+
   <script>
   document.querySelectorAll('#faq .faq-item .question').forEach(btn => {
     btn.addEventListener('click', () => {
