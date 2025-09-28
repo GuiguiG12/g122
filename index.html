@@ -765,57 +765,103 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
 }
 
 
- /* Section Roadmap */
-#roadmap {
-  padding: 4rem 2rem;         /* Extension de l’espace pour meilleure lisibilité */
-  background: var(--color-bg);
+ /* ===== Roadmap verticale (sobre + anim à l’entrée) ===== */
+.roadmap-v{ padding: calc(var(--spacing)*5) 0; }
+.rmv-header{ text-align:center; margin-bottom: 1.25rem; }
+.rmv-header h2{
+  font-size: clamp(1.7rem, 1.1rem + 2vw, 2.3rem);
+  color: var(--color-white);
+  margin-bottom: 5rem;
+}
+.rmv-range{
+  margin-top:.25rem; color: var(--color-text); opacity:.9;
+  font: 600 .95rem/1.2 Inter,system-ui; letter-spacing:.04em;
 }
 
-#roadmap h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.75rem;
-}
-
-/* Timeline verticale */
-.timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* Grille 3 colonnes : trimestre | axe | contenu */
+.rmv-list{
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) 28px minmax(240px, 1fr);
+  row-gap: 1.6rem;
+  margin: 0; padding: 0; list-style: none;
 }
 
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 20px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #ccc;
+/* Chaque item “déplie” ses 3 cellules dans la grille */
+.rmv-item{ display: contents; }
+
+/* Colonne trimestre (sticky) */
+.rmv-quarter{
+  grid-column: 1;
+  position: sticky; top: 6.5rem; /* reste visible en scroll */
+  align-self: start;
+  height: max-content;
+  z-index: 1;
+}
+.rmv-quarter > span{
+  display:inline-block;
+  font: 800 1rem/1 Inter,system-ui;
+  letter-spacing:.06em; color: var(--color-white);
+  padding: .2rem .55rem; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.02);
 }
 
-.timeline li {
-  position: relative;
-  padding: 1rem 0 1rem 60px;
-  margin-bottom: 2rem;       /* Espacement plus important entre chaque étape */
+/* Colonne axe (ligne verticale + dot + segment actif) */
+.rmv-axis{
+  grid-column: 2;
+  position: relative; min-height: 100%;
+}
+/* ligne base */
+.rmv-axis::before{
+  content:""; position:absolute; left: 13px; top: -1.2rem; bottom: -1.2rem; width: 2px;
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+}
+/* segment “actif” (rempli à l’entrée) */
+.rmv-axis::after{
+  content:""; position:absolute; left: 13px; top: -1.2rem; width:2px; height: 0%;
+  background: linear-gradient(180deg, rgba(138,10,255,.65), rgba(0,178,255,.65));
+  box-shadow: 0 0 16px rgba(0,178,255,.25);
+  transition: height .6s ease;
+}
+.rmv-item.is-inview .rmv-axis::after{ height: 100%; }
+
+/* dot */
+.rmv-dot{
+  position:absolute; left: 8px; top: .2rem; width:12px; height:12px; border-radius:50%;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 0 18px rgba(0,178,255,.28);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.rmv-item.is-inview .rmv-dot{ transform: scale(1.08); box-shadow: 0 0 0 2px rgba(255,255,255,.28), 0 0 24px rgba(0,178,255,.35); }
+
+/* Colonne contenu (texte, pas de carte lourde) */
+.rmv-body{
+  grid-column: 3;
+  align-self: start;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,.02);
+  padding: .9rem 1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.22);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .35s ease, transform .35s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.rmv-item.is-inview .rmv-body{ opacity: 1; transform: translateY(0); }
+.rmv-item.is-inview .rmv-body{ border-color: rgba(255,255,255,.14); box-shadow: 0 14px 28px rgba(0,0,0,.28); }
+.rmv-body ul{ margin:0; padding-left: 1.05rem; }
+.rmv-body li{ color: var(--color-text); line-height: 1.55; margin: .2rem 0; }
+
+/* Responsive */
+@media (max-width: 47.99em){
+  .rmv-list{ grid-template-columns: 92px 24px 1fr; row-gap: 1.25rem; }
+  .rmv-quarter{ top: 5.25rem; }
+  .rmv-quarter > span{ font-weight: 800; font-size: .92rem; }
+  .rmv-axis::before, .rmv-axis::after{ left: 11px; }
+  .rmv-dot{ left: 6px; }
+  .rmv-body{ padding: .85rem .9rem; }
 }
 
-.timeline li::before {
-  display: none;             /* Suppression des points */
-}
-
-.timeline .period {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
-}
-
-/* Bouton en bas à droite */
-.roadmap-footer {
-  margin-top: 2.5rem;
-  text-align: right;
-}
 /* Section Newsletter */
 #newsletter {
   background: var(--card-bg);
@@ -1311,30 +1357,94 @@ body::before {
   </div>
 </section>
 
-<section id="roadmap">
-  <h2>Roadmap</h2>
-  <ul class="timeline">
-    <li>
-      <span class="period">T2–T3 2025</span>
-      <p>Recherche & développement, backtests approfondis et déploiement de l’infrastructure technique</p>
-    </li>
-    <li>
-      <span class="period">T4 2025</span>
-      <p>Lancement du pilote auprès d’investisseurs privés et gestion des premiers capitaux réels</p>
-    </li>
-    <li>
-      <span class="period">T1–T2 2026</span>
-      <p>Ouverture à un public élargi, audit externe et montée en charge de la stratégie</p>
-    </li>
-    <li>
-      <span class="period">À partir de 2026</span>
-      <p>Étude de tokenisation, structuration via SPV/DAO et lancement public</p>
-    </li>
-  </ul>
-  <div class="roadmap-footer">
-  <a href="#about" class="btn btn-primary">Voir documentation</a>
-</div>
+<section class="roadmap-v" id="roadmap">
+  <div class="container">
+    <header class="rmv-header">
+      <h2>Roadmap</h2>
+    </header>
+
+    <ol class="rmv-list" aria-label="Feuille de route par trimestre">
+      <!-- T2 2025 -->
+      <li class="rmv-item">
+        <div class="rmv-quarter"><span>T2&nbsp;2025</span></div>
+        <div class="rmv-axis"><span class="rmv-dot" aria-hidden="true"></span></div>
+        <div class="rmv-body">
+          <ul>
+            <li>Consolidation des backtests & indicateurs de risque (TWR, MDD, vol).</li>
+            <li>Spécifications smart contracts (dépôt/retrait, garde-fous).</li>
+            <li>Canal de reporting hebdo/mensuel (format, fréquence, QA).</li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- T3 2025 -->
+      <li class="rmv-item">
+        <div class="rmv-quarter"><span>T3&nbsp;2025</span></div>
+        <div class="rmv-axis"><span class="rmv-dot" aria-hidden="true"></span></div>
+        <div class="rmv-body">
+          <ul>
+            <li>Moteur de stratégies v1 (hybride trading / arbitrage / DeFi).</li>
+            <li>Dry-runs sur testnet (oracles, limites, reprises incident).</li>
+            <li>Monitoring & alerting 24/7 (latence, slippage, risques).</li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- T4 2025 -->
+      <li class="rmv-item">
+        <div class="rmv-quarter"><span>T4&nbsp;2025</span></div>
+        <div class="rmv-axis"><span class="rmv-dot" aria-hidden="true"></span></div>
+        <div class="rmv-body">
+          <ul>
+            <li>Pilote investisseurs privés (closed beta, limites de taille).</li>
+            <li>Audit préliminaire contrats & infrastructure.</li>
+            <li>Politique KYC/AML & procédures de retraits.</li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- T1 2026 -->
+      <li class="rmv-item">
+        <div class="rmv-quarter"><span>T1&nbsp;2026</span></div>
+        <div class="rmv-axis"><span class="rmv-dot" aria-hidden="true"></span></div>
+        <div class="rmv-body">
+          <ul>
+            <li>Audit externe complet & pentests indépendants.</li>
+            <li>Stress tests marché (volatilité, liquidité, pannes venues).</li>
+            <li>Modèle de frais final & documentation publique.</li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- T2 2026 -->
+      <li class="rmv-item">
+        <div class="rmv-quarter"><span>T2&nbsp;2026</span></div>
+        <div class="rmv-axis"><span class="rmv-dot" aria-hidden="true"></span></div>
+        <div class="rmv-body">
+          <ul>
+            <li>Montée en charge progressive (multi-venues / allocations).</li>
+            <li>HA des bots, redondance et reprise automatisée.</li>
+            <li>Pipeline de distributions hebdo durci.</li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- T3 2026 -->
+      <li class="rmv-item">
+        <div class="rmv-quarter"><span>T3&nbsp;2026</span></div>
+        <div class="rmv-axis"><span class="rmv-dot" aria-hidden="true"></span></div>
+        <div class="rmv-body">
+          <ul>
+            <li>Pré-lancement public (cadre légal / SPV prêts).</li>
+            <li>Transparence live (tableau de bord perf en temps quasi réel).</li>
+            <li>Partenariats custody & opérateurs.</li>
+          </ul>
+        </div>
+      </li>
+    </ol>
+  </div>
 </section>
+
  <section id="newsletter">
   <div class="container newsletter-container">
     <div class="newsletter-text">
@@ -1554,7 +1664,31 @@ body::before {
   steps.forEach(el => io.observe(el));
 })();
 </script>
+<script>
+(function(){
+  // On observe directement les blocs de contenu (ils ont une vraie boîte)
+  const sections = document.querySelectorAll('.roadmap-v .rmv-body');
+  if(!sections.length) return;
 
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      const item = e.target.closest('.rmv-item');
+      if (!item) return;
+      if (e.isIntersecting && e.intersectionRatio > 0.25){
+        item.classList.add('is-inview');
+      } else {
+        item.classList.remove('is-inview');
+      }
+    });
+  }, { root: null, threshold: [0.1,0.25,0.5], rootMargin: "-12% 0px -12% 0px" });
+
+  sections.forEach(s => io.observe(s));
+
+  // Petit plus : marquer le premier item visible au chargement
+  const first = sections[0];
+  if (first) first.closest('.rmv-item')?.classList.add('is-inview');
+})();
+</script>
 
 </body>
 </html>
