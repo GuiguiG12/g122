@@ -862,19 +862,47 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   .rmv-body{ padding: .85rem .9rem; }
 }
 
-/* Section Newsletter */
-#newsletter {
-  background: var(--card-bg);
-  padding: 4rem 2rem; 
+/* =========================
+   Section Newsletter — fond gris + fondu noir haut/bas
+   ========================= */
+#newsletter{
+  /* Couleur centrale & hauteur des fondus */
+  --nl-gray: #26488b;                     /* ajuste (#141619 / #1a1a1a) si tu veux */
+  --nl-fade: clamp(64px, 14vh, 180px);    /* hauteur des dégradés haut/bas */
+
+  position: relative;
+  background: var(--nl-gray);             /* gris au centre */
+  padding: 4rem 2rem;                     /* garde ton spacing */
+  overflow: hidden;                        /* masque les pseudo-éléments */
 }
 
+/* Dégradé noir -> gris en haut & en bas (se fond dans les sections noires voisines) */
+#newsletter::before,
+#newsletter::after{
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  pointer-events: none;
+}
+#newsletter::before{
+  top: 0; height: var(--nl-fade);
+  background: linear-gradient(to bottom, #050a14 0%, var(--nl-gray) 100%);
+}
+#newsletter::after{
+  bottom: 0; height: var(--nl-fade);
+  background: linear-gradient(to top, #050a14 0%, var(--nl-gray) 100%);
+}
+
+/* S'assure que le contenu passe au-dessus des fondus */
+#newsletter .container{ position: relative; z-index: 1; }
+
+/* Titre / texte */
 #newsletter h2 {
   text-align: center;
   font-size: 1.75rem;
   margin-bottom: 1rem;
   color: var(--color-white);
 }
-
 #newsletter p {
   text-align: center;
   max-width: 600px;
@@ -890,6 +918,7 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   gap: 2rem;
 }
 
+/* Formulaire */
 .newsletter-form {
   display: flex;
   flex-direction: column;
@@ -897,25 +926,52 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   align-items: center;
 }
 
+/* Champ e-mail */
 .newsletter-form input {
   width: 100%;
   max-width: 350px;
   padding: 0.75rem 1rem;
-  border: none;
+  border: 1px solid rgb(255, 255, 255);
   border-radius: var(--card-radius);
   font-size: 1rem;
+  background: rgb(255, 255, 255);
+  color: var(--color-white);
 }
 
+/* Bouton */
 .newsletter-form button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
+  width: auto;                 /* évite toute largeur fixe héritée */
+  white-space: nowrap;
 }
 
+/* Note sous le formulaire */
 .newsletter-note {
   font-size: 0.75rem;
   color: var(--color-text);
   text-align: center;
   margin-top: 0.5rem;
+}
+
+/* Case de consentement (juste sous l'email) */
+.nl-consent{
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  align-items: start;
+  gap: .6rem .65rem;
+  margin-top: .65rem;               /* espace sous le champ email */
+  font: 500 .85rem/1.35 Inter, system-ui;
+  color: rgba(255,255,255,.80);
+}
+.nl-consent input[type="checkbox"]{
+  margin-top: .15rem;               /* aligne avec la 1re ligne du texte */
+  accent-color: var(--color-button);/* cohérent avec ta palette */
+}
+.nl-consent a{
+  color: rgba(255,255,255,.9);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* Desktop : deux colonnes */
@@ -937,8 +993,12 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   .newsletter-note {
     margin-top: 0;
     margin-left: 1rem;
+    text-align: left;
   }
 }
+
+
+
 /* Section FAQ */
 #faq {
   padding: 4rem 2rem;
@@ -960,14 +1020,14 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   margin-top: 1.5rem;
 }
 .question {
-  width: 100%;
+  width: 110%;
   background: none;
   border: none;
   color: var(--color-white);
   font-size: 1.125rem;
   font-weight: 600;
   text-align: left;
-  padding: 1rem;
+  padding: 1.3rem;
   position: relative;
   cursor: pointer;
   transition: color 0.3s;
@@ -1453,10 +1513,20 @@ body::before {
     </div>
     <form class="newsletter-form">
       <input type="email" placeholder="votre.email@exemple.com" required>
+  <label class="nl-consent">
+  <input type="checkbox" name="consent" required>
+  <span>
+    J’accepte de recevoir des e-mails d’information de G12
+    (newsletter et invitations à la bêta). Je peux me désabonner à tout moment.
+    J’ai lu la <a href="/privacy.html" target="_blank" rel="noopener">Politique de confidentialité</a>.
+  </span>
+</label>
       <button type="submit" class="btn btn-primary">S’inscrire</button>
       <p class="newsletter-note">Nous respectons votre vie privée. Pas de spam, désabonnement facile.</p>
     </form>
   </div>
+
+
 </section>
 
 <section id="faq">
