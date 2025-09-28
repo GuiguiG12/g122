@@ -1011,7 +1011,7 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   color: var(--color-white);
 }
 
-/* Liste d’accordéon */
+/* Liste */
 .faq-list {
   max-width: 800px;
   margin: 0 auto;
@@ -1019,52 +1019,77 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
 .faq-item + .faq-item {
   margin-top: 1.5rem;
 }
+
+/* Question (bouton) */
 .question {
-  width: 110%;
+  width: 100%;                          /* évite le débordement 110% */
   background: none;
   border: none;
   color: var(--color-white);
   font-size: 1.125rem;
   font-weight: 600;
   text-align: left;
-  padding: 1.3rem;
+  line-height: 1.35;
+  /* padding avec marge à droite pour créer l'espace avant le “+” */
+  padding: 1.1rem 3.25rem 1.1rem 1.25rem; /* <<< espace texte ↔ “+” */
   position: relative;
   cursor: pointer;
   transition: color 0.3s;
 }
+
+/* Icône “+” à droite (tourne à l’ouverture) */
 .question::after {
   content: '+';
   position: absolute;
   right: 1rem;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%);          /* état fermé */
   font-size: 1.25rem;
-  transition: transform 0.3s;
+  transition: transform 0.3s ease;      /* rotation douce */
 }
 .faq-item.active .question::after {
-  transform: translateY(-50%) rotate(45deg);
-}
-.question:hover {
-  color: var(--color-primary);
+  transform: translateY(-50%) rotate(45deg); /* même animation, conservée */
 }
 
+.question:hover,
+.question:focus-visible {
+  color:var(--color-primary);
+  outline: none;
+}
+
+/* Réponse (accordéon) */
 .answer {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease;
+  margin-top: .75rem;                   /* <<< plus d’espace sous la question */
 }
 .faq-item.active .answer {
-  max-height: 500px; /* suffisant pour votre contenu */
+  max-height: 900px;                    /* marge confortable pour du texte long */
 }
 
 /* Contenu de la réponse */
 .answer p {
-  padding: 0 1rem 1rem;
+  padding: .9rem 1rem 1rem;             /* un peu plus d'air en haut */
   color: var(--color-text);
   line-height: 1.6;
   background: var(--card-bg);
   border-radius: var(--card-radius);
 }
+/* FAQ — réponses justifiées */
+.answer p,
+.answer li {
+  text-align: justify;
+  text-justify: inter-word;   /* meilleure répartition des espaces */
+  hyphens: auto;              /* césure auto */
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  overflow-wrap: anywhere;    /* évite les débordements rares */
+}
+
+/* Option : garder la dernière ligne alignée à gauche */
+.answer p { text-align-last: left; }
+
 /* Footer */
 #footer {
   background: var(--color-bg);
