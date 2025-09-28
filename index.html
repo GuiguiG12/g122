@@ -12,29 +12,45 @@
     @media (min-width: 48em) { html { font-size: 1rem; /*16px*/ } }
     @media (min-width: 62em) { html { font-size: 1.125rem; /*18px*/ } }
 
-    :root {
-      --color-bg: #000;
-      --color-text: #E0E0E0;
-      --color-white: #FFF;
-      --color-primary: #59bbaa;
-      --color-secondary: #d6bc83;
-      --nav-height: 3.75rem;
-      --spacing: 1rem;
-      --blur-level: 0.5rem;
-      --card-bg: rgba(255,255,255,0.05);
-      --card-radius: 0.5rem;
-    }
+
+:root {
+  --color-bg: #050A14;          /* noir bleuté (fonds) */
+  --color-text: #E6EEF8;        /* texte principal un peu plus clair */
+  --color-white: #FFFFFF;
+  --color-primary: #00B2FF;     /* cyan Backed */
+  --color-secondary: #6633FF;
+  --color-button: #0066ff;    /* violet Backed */
+  --nav-height: 3.75rem;
+  --spacing: 1rem;
+  --blur-level: 0.5rem;
+  --card-bg: rgba(255,255,255,0.05);
+  --card-radius: 0.5rem;
+}
 
     /* Reset & base */
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    body{background:var(--color-bg);color:var(--color-text);font-family:'Inter',sans-serif;overflow-x:hidden}
+/* ---------- FIX OVERFLOW HORIZONTAL (mobile-first) ---------- */
+html, body {
+  max-width: 100vw;      /* empêche l'overscroll horizontal */
+  overflow-x: hidden;    /* sécurité si un élément déborde */
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', sans-serif;
+}
+
+/* reset box-sizing (réassurance) */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* images responsive (évite dépassements inattendus) */
+img { max-width: 100%; height: auto; display: block; }
+
     a{text-decoration:none;color:inherit}
     ul{list-style:none}
     .container{max-width:75rem;margin:0 auto;padding:0 calc(var(--spacing)*1.25)}
 
     /* Buttons */
-    .btn{padding:0.5rem 1rem;font-weight:600;border-radius:1.875rem;text-align:center;transition:background .3s,transform .2s;font-size:1rem;white-space:nowrap;display:inline-block}
-    .btn-primary{background:var(--color-secondary);color:var(--color-bg)}
+    .btn{padding:0.5rem 1rem;font-weight:600;border-radius:0.7rem;text-align:center;transition:background .3s,transform .2s;font-size:1rem;white-space:nowrap;display:inline-block;width: 8rem;}
+    .btn-primary{background:var(--color-button);color:var(--color-text)}
     .btn-primary:hover{transform:scale(1.05)}
     .btn-secondary{background:transparent;border:0.125rem solid var(--color-white);color:var(--color-white)}
     .btn-secondary:hover{background:rgba(255,255,255,0.1);transform:scale(1.05)}
@@ -77,65 +93,653 @@
     .cta-group{display:flex;gap:1rem;margin-top:1.5rem;opacity:0;animation:fadeUp .6s ease forwards 2s}
     .cta, .cta-secondary{flex:1;padding:0.5rem 0.75rem;font-size:0.875rem}
 
-    /* Project Section */
-    .project { background: var(--color-bg); padding: calc(var(--spacing) * 2) 0;z-index: 1; }
-    .project .container { display: flex; flex-direction: column; gap: 1rem; text-align: center; }
-    .project h2 { font-size: 1.75rem; color: var(--color-white); margin-bottom: 0.5rem;z-index: 1; }
-    .project p.lead { font-size: 1rem; max-width: 90%; margin: 0 auto 1.5rem; color: var(--color-text); line-height: 1.4;z-index: 1; }
+/* ————— “Investir avec maîtrise et sérénité” en carte style Backed ————— */
 
-    /* Features Slider on Mobile */
- .features {
+/* Le conteneur de la section devient le repère pour nos pseudo-éléments */
+.project .container {
+  position: relative;
+  padding-top: 6rem;   /* espace haut interne de la carte */
+  padding-bottom: 6rem;   /* espace bas interne de la carte */
+}
+
+/* La carte translucide (fond + dégradé + radius) */
+.project .container::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: min(720px, 100% - 2rem);           /* largeur carte, responsive */
+  height: clamp(350px, 34vw, 360px);        /* hauteur suffisante pour titre+lead */
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(253, 253, 253, 0), rgba(255, 255, 255, 0.103)),
+    rgba(51, 51, 51, 0.118);                   /* couche sombre translucide */
+  border: 1px solid rgba(255,255,255,.06);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Quadrillage diagonal discret dans la carte */
+.project .container::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: min(720px, 100% - 2rem);
+  height: clamp(260px, 34vw, 360px);
+  border-radius: 16px;
+  border-color: #f9fafc00;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.115) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.115) 0 1px, transparent 1px 28px);
+  mask: linear-gradient(110deg, rgba(0, 0, 0, 0.205), rgba(0,0,0,.2)); /* atténue vers le bas */
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Titre + paragraphe restent au-dessus de la carte et alignés à gauche */
+.project h2,
+.project .lead,
+.project small.muted {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;               /* largeur de texte */
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  padding-left: 1rem;
+  padding-right: 2rem;
+}
+
+/* Hiérarchie visuelle façon Backed */
+.project h2 {
+  font-size: clamp(1.9rem, 2.2vw + 1rem, 2.4rem);
+  line-height: 1.15;
+  margin-bottom: .75rem;
+  letter-spacing: 0.2px;
+}
+
+.project .lead {
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: 0;               /* la note “phase pilote” vient juste après */
+}
+
+/* La petite note en dessous (on la laisse telle quelle mais mieux posée) */
+.project small.muted {
+  display: block;
+  margin-top: .85rem;
+  color: rgba(214, 188, 131, .95); /* tu peux aussi garder ta couleur si tu préfères */
+}
+
+/* Décoller le carrousel/feature block de la carte */
+.project .features-wrap {
+  margin-top: 8rem;
+}
+
+/* wrapper qui ne scroll pas : positionné pour que les dots soient absolues par rapport à lui */
+.features-wrap {
   position: relative;
   width: 100%;
-  height: 100px;            /* hauteur du carousel */
-  perspective: 2000px;
-  transform-style: preserve-3d;
-  overflow: hidden;
-  padding-bottom: 150px;
-  /* plus de display:flex ! */
 }
 
-.card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 60%;               /* taille carte centrale */
-  max-width: 300px;
-  height: 7rem;
-  transform: translate(-50%, -50%);
-  transform-origin: center center;
-  backface-visibility: hidden;
-  border: 1.3px solid transparent;
-  border-color: var(--color-white); border-radius: 10px;
-  will-change: transform, filter;
-}
+/* scroll container (le seul qui scroll) */
 .features {
-  transform-style: preserve-3d;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  display: block;
+  padding: 0 0.6rem 1rem; /* plus petit padding-bottom (les dots sont dans le wrapper) */
+}
+
+/* track */
+.features .cards {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  padding: 0.6rem 0;
+  box-sizing: border-box;
+}
+
+/* Bouton rond avec flèche */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+  margin-top: auto; /* pousse le bouton en bas */
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: var(--color-white);
+  font-size: 1.25rem;
+  text-decoration: none;
+  transition: background .3s, transform .2s;
+}
+
+.btn-icon:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
 }
 
 
+/* cartes avec hauteur augmentée */
+.features .card {
+  scroll-snap-align: center;
+  flex: 0 0 62%;
+  max-width: 360px;
+  border-radius: 14px;
+  padding: 1.1rem;
+  min-height: 250px;      /* HAUTEUR AUGMENTÉE pour mobile */
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.55);
+  margin-bottom: 1rem;
+}
+/* Carte Stratégies hybrides : image en haut, texte en bas */
+.card-hybrides {
+  display: flex;
+  flex-direction: column; /* pile verticalement image puis texte */
+  align-items: flex-start; /* aligne le contenu à gauche */
+  justify-content: flex-start;
+  padding: 0; /* on retire le padding de la card par défaut */
+}
+
+.card-hybrides .card-media {
+  width: 100%;
+  margin-bottom: 0.75rem; /* espace entre image et texte */
+}
+
+.card-hybrides .card-media img {
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* l’image occupe bien le haut */
+  border-bottom: 1px solid rgba(255,255,255,0.08); /* séparation visuelle */
+}
+
+.card-hybrides .card-content {
+  padding: 1rem; /* remet du padding uniquement autour du texte */
+  text-align: left; /* force l’alignement à gauche */
+  width: 100%;
+}
+
+/* Style spécifique à la carte "Stratégies hybrides" */
+.card-hybrides {
+  position: relative;
+  background:
+    linear-gradient(130deg, #7a15ff, #00B2FF);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+/* === Carte Stratégies hybrides (final) === */
+.features .card.card-hybrides{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+
+  /* Fond façon Backed (valeurs RGBA correctes) */
+background: #8A0AFF;
+background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 1) 50%, rgba(0, 201, 232, 1) 100%);
+}
+
+/* Image en haut de la carte */
+.features .card.card-hybrides .card-media{
+  width: 100%;
+}
+.features .card.card-hybrides .card-media img{
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 1rem;
+  margin-top: 3.2rem;
+  object-fit: cover; /* l’image occupe bien le haut */
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Titre + texte en bas, alignés à gauche */
+.features .card.card-hybrides .card-content{
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-top: -6rem;
+}
+.features .card.card-hybrides .title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem; /* plus d’espace avec le texte */
+}  
+.features .card.card-hybrides .subtitle{
+  font-size: 1rem;
+  line-height: 1.5; 
+  text-align: left;
+  width: 100%;
+}
+/* === UNIFORMISATION Cartes 2,3,4 comme la 1 (même dégradé + layout) === */
+.features .card.card-securite,
+.features .card.card-reporting,
+.features .card.card-recompenses {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-color: #8A0AFF;
+background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 1) 50%, rgba(0, 201, 232, 1) 100%);
+};
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+
+/* IMAGE en haut : même hauteur visuelle pour toutes */
+.features .card.card-securite .card-media,
+.features .card.card-reporting .card-media,
+.features .card.card-recompenses .card-media {
+  width: 100%;
+  margin: 0;                 /* pas d'espace : le texte viendra mordre dessus */
+  aspect-ratio: 16 / 10;     /* hauteur d’illustration identique sur toutes */
+  overflow: hidden;
+  
+}
+.features .card.card-securite .card-media img,
+.features .card.card-reporting .card-media img,
+.features .card.card-recompenses .card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* remplit la zone image */
+  display: block;
+
+}
+
+/* TEXTE : même position (mord sur l’image à la même hauteur) */
+.features .card.card-securite .card-content,
+.features .card.card-reporting .card-content,
+.features .card.card-recompenses .card-content {
+  padding: 1rem;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+  margin-top: -2rem;       /* remonte le texte par-dessus l’image */
+}
+
+/* Espacement Titre <-> Paragraphe identique */
+.features .card.card-securite .card-content .title,
+.features .card.card-reporting .card-content .title,
+.features .card.card-recompenses .card-content .title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;       /* même gap partout */
+}
+
+/* BOUTON : bas à droite avec espace intérieur */
+.features .card.card-securite .card-actions,
+.features .card.card-reporting .card-actions,
+.features .card.card-recompenses .card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+  margin-top: auto;          /* pousse le bouton en bas */
+}
+
+/* texte */
+.card-content { display:flex; flex-direction:column; justify-content:center; min-width:0; }
+.features .card .title { font-size:1.05rem; font-weight:700; color:var(--color-white); line-height:1.1; margin:0; }
+.features .card .subtitle { font-size:0.95rem; color:var(--color-text); margin-top:0.25rem; line-height:1.3; }
+
+/* DOTS : absolute mais RELATIF au wrapper (features-wrap) => ils ne scrollent plus */
+.features-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10px;  /* fixe sous le bloc */
+  display: flex;
+  gap: 0.5rem;
+  z-index: 50;   /* suffisamment haut */
+  pointer-events: auto;
+}
+
+.features-dots button {
+  width:8px; height:8px; border-radius:50%; border:0; background:rgba(255,255,255,0.18);
+  opacity:0.9; cursor:pointer; transition: transform .16s, background .16s, width .12s, height .12s;
+}
+.features-dots button.active {
+  background: var(--color-white); width:10px;height:10px; transform: scale(1.15); opacity:1;
+}
+
+/* Desktop adjustments */
+@media (min-width:48em) {
+  .features { padding-bottom: 1.5rem; }
+  .features .card { flex: 0 0 22%; flex-direction: column; padding:1.25rem; min-height:180px; }
+  .card-icon { width:64px; height:64px; padding:10px; border-radius:14px; }
+  .features-dots { bottom: 8px; }
+}
+
+/* sécurité overflow */
+.hero { overflow: hidden; }
 
 
-    /* How It Works Section */
-    .steps { background: var(--color-bg); padding: calc(var(--spacing)*2) 0; }
-    .steps .container { display: flex; flex-direction: column; gap: 1.5rem; }
-    .steps h2 { font-size: 1.75rem; color: var(--color-white); text-align: center; margin-bottom: 1rem; }
-    .steps-list { display: flex; flex-direction: column; gap: 1rem; }
-    @media (min-width:48em) { .steps-list { flex-direction: row; } .step { flex:1; } }
-    .step { background: var(--card-bg); padding: var(--spacing); border-radius: var(--card-radius); border: 2px solid transparent; border-image: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) 1; }
-    .step-number { font-size: 1.25rem; font-weight:700; color: var(--color-secondary); margin-bottom: 0.5rem; }
-    .step-title { font-size: 1.25rem; font-weight:600; color: var(--color-white); margin-bottom: 0.25rem; }
-    .step-subtitle { font-size: 1rem; font-weight:500; color: var(--color-white); margin-bottom: 0.5rem; }
-    .step p { font-size: 0.9rem; color: var(--color-text); line-height: 1.4; }
 
-    /* Performance Section */
-    .performance { background: var(--color-bg); padding: calc(var(--spacing)*2) 0; }
-    .performance .container { display: flex; flex-direction: column; gap: 1rem; text-align: center; }
-    .performance h2 { font-size: 1.75rem; color: var(--color-white); margin-bottom: 1rem; }
-    .performance-metrics { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-    .metric { flex: 1 1 30%; min-width: 8rem; }
-    .metric-value { font-size: 1.5rem; font-weight:700; color: var(--color-white); }
-    .metric-label { font-size: 0.875rem; color: var(--color-text); }
+/* =========================
+   HOW IT WORKS — CLEAN CSS (image plein fond façon Synthetix)
+   ========================= */
+
+/* Section wrapper */
+.steps {
+  background: var(--color-bg);
+  padding: calc(var(--spacing) * 3) 0;
+}
+.steps .container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.steps h2 {
+  font-size: 1.9rem;
+  color: var(--color-white);
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+/* Liste d'étapes (pile mobile) */
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Carte d'étape — fond transparent + bord animé + image plein fond derrière le contenu */
+.step {
+  position: relative;                       /* contexte pour calques internes */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem 1rem 1.25rem;
+  border-radius: 14px;
+  background: transparent;
+  isolation: isolate;
+  border: 1px solid rgba(255,255,255,0.06);
+  outline: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  transition: border-color .35s ease, box-shadow .35s ease, outline-color .35s ease;
+  min-height: 240px;
+}
+
+/* Halo/gradient subtil autour du bord — intensifié quand .inview */
+.step::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(138,10,255,.28), rgba(0,178,255,.22));
+  opacity: .25;
+  filter: blur(8px);
+  transition: opacity .35s ease, filter .35s ease;
+  z-index: -1;
+}
+.step.inview {
+  border-color: rgba(255,255,255,0.22);
+  outline-color: rgba(255,255,255,0.08);
+  box-shadow: 0 18px 34px rgba(0,0,0,.35);
+}
+.step.inview::before { opacity: .55; filter: blur(4px); }
+
+/* =========================
+   IMAGE PLEIN FOND (derrière le contenu)
+   On réutilise .step-media existant comme calque de fond.
+   ========================= */
+.steps-list .step .step-media{
+  position: absolute;
+  inset: 0;
+  z-index: 0;                   /* sous le contenu, au-dessus du ::before */
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  background: transparent;
+}
+.steps-list .step .step-media img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;            /* occupe toute la carte */
+  transform: scale(1.03);       /* évite les bords lors du mask */
+  opacity: 1;
+  filter: brightness(1) saturate(.9) contrast(1.05);  /* dim + légère désat */
+  transition: transform .45s ease, filter .45s ease;
+}
+/* Overlay dégradé pour lisibilité + fondu doux aux bords */
+.steps-list .step .step-media::after{
+  content:"";
+  position:absolute; inset:0;
+  z-index:1;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.474) 0%, rgba(0, 0, 0, 0.956) 100%);
+  -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 65%, transparent 100%);
+          mask-image: radial-gradient(120% 120% at 50% 50%, #000 65%, transparent 100%);
+}
+/* Reveal léger quand la carte entre en vue */
+.step.inview .step-media img{
+  filter: brightness(1) saturate(1) contrast(1.08);
+  transform: scale(1.06);
+}
+
+/* =========================
+   CONTENU AU-DESSUS
+   ========================= */
+
+/* Numéro d'étape : haut-gauche + taille augmentée + glow */
+.step-number{
+  position: absolute;
+  top: 1.6rem;
+  left: 1rem;
+  z-index: 2;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--color-white);
+  font-size: 2rem;
+  text-shadow: 0 0 8px rgba(255, 0, 68, 0.35);
+  pointer-events: none;
+}
+
+/* Zone texte : descend un peu pour s’éloigner du bord/numéro, paragraphe en bas et pleine largeur */
+.steps-list .step .step-content{
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  text-align: left;
+  padding-top: 4rem;                          /* descend titre + paragraphe */
+  display: grid;
+  grid-template-rows: auto 1fr auto;          /* titre, espace élastique, paragraphe */
+  row-gap: .35rem;
+  min-height: 180px;
+}
+.steps-list .step .step-title{
+  font: 700 clamp(1.05rem, 1rem + .9vw, 1.25rem)/1.2 Inter,system-ui;
+  color: var(--color-white);
+  margin: 0;
+  margin-top: 3rem;
+  margin-left: 1rem;
+}
+.steps-list .step .step-content p{
+  grid-row: 3;                                 /* dernière ligne du grid */
+  align-self: end;                              /* colle le paragraphe en bas */
+  margin-top: .75rem;
+  margin-left: 1rem;
+  margin-right: 3rem;
+  color: var(--color-text);
+  font: 400 .95rem/1.55 Inter,system-ui;
+  text-align: justify;                          /* justification */
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
+/* =========================
+   DESKTOP TUNING (≥48em)
+   ========================= */
+@media (min-width: 48em){
+  .step{ min-height: 280px; padding: 1.2rem 1.2rem 1.35rem; }
+  .step-number{ top: 1rem; left: 1.1rem; font-size: 1.5rem; }
+  .steps-list .step .step-content{ padding-top: 4.2rem; min-height: 200px; }
+  .steps-list .step .step-title{ font-size: 1.35rem; }
+  .steps-list .step .step-content p{ margin-top: .85rem; }
+}
+
+/* ===== Landing — Performance (KPI ultra-compact) ===== */
+.perf-hero{
+  padding: calc(var(--spacing)*5) 0 calc(var(--spacing)*4);
+  text-align: center;
+}
+.perf-hero h2{
+  font-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.6rem);
+  color: var(--color-white);
+  margin-bottom: 1.9rem;
+}
+
+/* Ligne APY + TVL */
+.perf-top{
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 1rem;
+}
+.metric{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  min-width: 0;
+}
+.metric-label{
+  font: 600 .85rem/1 Inter, system-ui;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  opacity: .95;
+}
+.metric-value{
+  font: 800 clamp(1.6rem, 1.2rem + 2.2vw, 3rem)/1 Inter, system-ui;
+  white-space: nowrap;
+}
+
+/* Dégradé sur les chiffres (même style que 24–30%) */
+.gradient{
+  background: linear-gradient(90deg, #8A0AFF, #00B2FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 18px rgba(0,178,255,.25);
+}
+
+/* Séparateur fin entre APY et TVL */
+.perf-sep{
+  width: 1px;
+  height: 36px;
+  align-self: center;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.22), rgba(255,255,255,.06));
+  opacity: .9;
+}
+
+/* Ligne Airdrop + tooltip */
+.perf-bottom{
+  margin-top: 1.5rem;
+}
+.tooltip{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+.tip-icon{
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.25);
+  background: transparent;
+  color: #fff;
+  font: 700 .85rem/1 Inter, system-ui;
+  border-radius: 999px;
+  width: 1.25rem; height: 1.25rem;
+  display: grid; place-items: center;
+  cursor: help;
+  transition: border-color .2s, box-shadow .2s;
+}
+.tip-icon:hover,
+.tip-icon:focus-visible{
+  border-color: rgba(255,255,255,.5);
+  box-shadow: 0 0 0 4px rgba(102,51,255,.12);
+  outline: none;
+}
+
+/* Bulle tooltip (CSS-only, via data-attribute) */
+.tooltip::after{
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%; transform: translateX(-50%) translateY(8px);
+  bottom: -2.25rem; /* base, sera ajusté en mobile */
+  min-width: 260px; max-width: min(88vw, 520px);
+  padding: .55rem .7rem;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 10px;
+  background: rgba(8,8,8,.92);
+  color: var(--color-text);
+  font: 500 .85rem/1.35 Inter, system-ui;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 10;
+}
+.tooltip:hover::after,
+.tooltip:focus-within::after{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Disclaimer */
+.perf-disclaimer{
+  margin-top: 1.1rem;
+  font: .85rem/1.5 Inter, system-ui;
+  color: rgba(255,255,255,.75);
+}
+
+/* Responsive — mobile: empile et masque le séparateur */
+@media (max-width: 47.99em){
+  .perf-top{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+  }
+  .perf-sep{ display: none; }
+  .tooltip::after{
+    bottom: auto; top: calc(100% + .5rem);
+  }
+}
 
  /* Section Roadmap */
 #roadmap {
@@ -412,6 +1016,22 @@
   font-size: 0.75rem;
   color: var(--color-text);
 }
+/* Fond global façon Backed : noir + nappes cyan/violet + léger vignettage */
+body::before {
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgba(102,51,255,.22), transparent 60%),
+    radial-gradient(120% 160% at 0% 100%, rgba(0,178,255,.18), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)),
+    var(--color-bg);
+  /* vignettage doux pour faire respirer le centre */
+  box-shadow: inset 0 0 200px rgba(0,0,0,.35);
+  pointer-events:none;
+}
+
 
 
   </style>
@@ -454,85 +1074,203 @@
   <section class="project">
     <div class="container">
       <h2>Investir avec maîtrise et sérénité</h2>
-      <p class="lead">Avec G12, vous confiez vos ressources à une équipe d’experts et à des modèles quantitatifs avancés, conçus pour maximiser les rendements tout en maîtrisant le risque. Un reporting clair chaque mois, des frais compétitifs et des distributions hebdomadaires fondées sur la performance vous accompagnent.</p>
-      <div class="features">
-        <div class="card">
-          <span class="icon">🤖</span>
-          <h3>Algorithmes propriétaires</h3>
-          <p>Anticipez les marchés grâce à notre IA et nos modèles quantitatifs.</p>
-        </div>
-        <div class="card">
-          <span class="icon">🔒</span>
-          <h3>Sécurité & Transparence</h3>
-          <p>Reporting mensuel, fonds audité, suivi en temps réel.</p>
-        </div>
-        <div class="card">
-          <span class="icon">🌍</span>
-          <h3>Accessibilité</h3>
-          <p>Investissez dès 100 €, sans engagement, partout dans le monde.</p>
-        </div>
-        <div class="card">
-          <span class="icon">⚡</span>
-          <h3>Réactivité</h3>
-          <p>Réallocation dynamique selon les cycles et la volatilité du marché.</p>
-        </div>
+      <p class="lead">G12 est un fonds d’investissement en cryptomonnaies qui rend accessibles des stratégies professionnelles : modèles quantitatifs propriétaires + gestion active, visant des rendements maîtrisés et un suivi transparent.</p>
+<small class="muted" style="display:block;margin-top:0.6rem;color:rgba(224,224,224,0.6);">Phase pilote — accès limité sur invitation</small>
+
+   <!-- WRAPPER FIX : dots hors du scroll (ne bougent plus) -->
+<!-- WRAPPER FIX : dots hors du scroll (ne bougent plus) -->
+<div class="features-wrap">
+  <!-- element scrollable -->
+  <div class="features" id="features" role="region" aria-label="Carrousel des avantages">
+    <div class="cards" role="list">
+      <!-- card 1 -->
+<div class="card card-hybrides" role="listitem">
+  <div class="card-media" aria-hidden="true">
+    <img src="carte 1.png" alt="Illustration Stratégies hybrides">
+  </div>
+  <div class="card-content">
+    <div class="title">Stratégies hybrides</div>
+    <div class="subtitle">Trading, funding rates, DeFi — approche multi-stratégie orientée rendement contrôlé.</div>
+  </div>
+  <div class="card-actions">
+  <a href="#whitepaper-section" class="btn-icon" aria-label="Voir plus">
+    ↗
+  </a>
+</div>
+
+</div>
+
+
+      <!-- card 2 -->
+<div class="card card-securite" role="listitem">
+  <div class="card-media">
+    <img src="carte 2.png" alt="Illustration Sécurité & Transparence">
+  </div>
+  <div class="card-content">
+    <div class="title">Sécurité & Transparence</div>
+    <div class="subtitle">Custody multi-signature, audit externe et journalisation infalsifiable.</div>
+  </div>
+  <div class="card-actions">
+    <a href="https://github.com/tonrepo#securite" class="btn-icon" target="_blank" aria-label="Voir plus">↗</a>
+  </div>
+</div>
+
+
+      <!-- card 3 -->
+<div class="card card-reporting" role="listitem">
+  <div class="card-media" aria-hidden="true">
+    <!-- mets ton visuel quand il sera prêt -->
+    <img src="carte 3.png" alt="Illustration Reporting">
+  </div>
+  <div class="card-content">
+    <div class="title">Reporting</div>
+    <div class="subtitle">Résumé simple et transparent chaque mois — données claires, sans jargon.</div>
+  </div>
+  <div class="card-actions">
+    <a href="https://github.com/tonrepo#reporting" class="btn-icon" target="_blank" aria-label="Ouvrir dans le white paper">↗</a>
+  </div>
+</div>
+
+
+<!-- card 4 -->
+<div class="card card-recompenses" role="listitem">
+  <div class="card-media" aria-hidden="true">
+    <!-- image temporaire à remplacer -->
+    <img src="carte 4.png" alt="Illustration Récompenses">
+  </div>
+  <div class="card-content">
+    <div class="title">Récompenses</div>
+    <div class="subtitle">
+      Des airdrops réguliers en G12 — capitalisez automatiquement et laissez jouer l’effet composé.
+    </div>
+  </div>
+  <div class="card-actions">
+    <a href="https://github.com/tonrepo#recompenses" class="btn-icon" target="_blank" aria-label="Ouvrir dans le white paper">↗</a>
+  </div>
+</div>
+
+
+    </div> <!-- .cards -->
+  </div> <!-- .features -->
+
+  <!-- dots placés en dehors du track scrollable -->
+  <div class="features-dots" id="features-dots" aria-hidden="false"></div>
+</div>
+
+  <!-- element scrollable -->
+  <div class="features" id="features" role="region" aria-label="Carrousel des avantages">
+    <div class="cards" role="list">
+      <!-- copie ici tes .card (inchangées) -->
+      <!-- ex :
+      <div class="card" role="listitem">...</div>
+      -->
+    </div>
+  </div>
+
+  <!-- dots placés en dehors du track scrollable -->
+  <div class="features-dots" id="features-dots" aria-hidden="false"></div>
+</div>
+
+
+
       </div>
     </div>
   </section>
 
   <!-- How It Works Section -->
-  <section class="steps">
-    <div class="container">
-      <h2>Comment G12 fonctionne ?</h2>
-      <div class="steps-list">
-        <div class="step">
-          <div class="step-number">01</div>
-          <div class="step-title">Entrez dans le cercle G12</div>
-          <div class="step-subtitle">Investissez en un clic</div>
-          <p>Déposez vos dollars, recevez instantanément des G12 à taux fixe 1:1.</p>
-        </div>
-        <div class="step">
-          <div class="step-number">02</div>
-          <div class="step-title">On met votre argent au travail</div>
-          <div class="step-subtitle">Stratégies 100% automatisées</div>
-          <p>Bot trading, arbitrage DeFi et optimisations funding, sans lever le petit doigt.</p>
-        </div>
-        <div class="step">
-          <div class="step-number">03</div>
-          <div class="step-title">Récompenses chaque semaine</div>
-          <div class="step-subtitle">Des airdrops G12 réguliers</div>
-          <p>Conservez vos tokens et voyez votre capital grossir.</p>
-        </div>
-        <div class="step">
-          <div class="step-number">04</div>
-          <div class="step-title">Faites croître votre portefeuille</div>
-          <div class="step-subtitle">Réclamez, convertissez ou réinvestissez</div>
-          <p>Retirez vos gains en dollars ou laissez-les générer des intérêts composés.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Performance Section -->
-  <section class="performance">
-    <div class="container">
-      <h2>Nos performances en un coup d'œil</h2>
-      <div class="performance-metrics">
-        <div class="metric">
-          <div class="metric-value">6 459,45 $</div>
-          <div class="metric-label">TVL Total</div>
+<section class="steps" id="how-it-works">
+  <div class="container">
+    <h2>Comment G12 fonctionne&nbsp;?</h2>
+    <div class="steps-list">
+
+      <!-- Étape 1 : image à droite -->
+      <div class="step">
+        <div class="step-content">
+          <div class="step-number">01</div>
+          <div class="step-title">Entrez dans l’écosystème G12</div>
+          <p>Déposez vos USDC&nbsp;: vous recevez des <strong>G12</strong> au taux fixe <strong>1&nbsp;:&nbsp;1</strong>. Simple et instantané.</p>
         </div>
-        <div class="metric">
-          <div class="metric-value">24,48 %</div>
-          <div class="metric-label">APY estimé</div>
-        </div>
-        <div class="metric">
-          <div class="metric-value">1,18 %</div>
-          <div class="metric-label">Dernier airdrop</div>
+        <div class="step-media" aria-hidden="true">
+          <img src="step image 1.png" alt="Dépôt USDC vers G12">
         </div>
       </div>
+
+      <!-- Étape 2 : image à gauche -->
+      <div class="step reverse">
+        <div class="step-media" aria-hidden="true">
+          <img src="step image 2.png" alt="Capital au travail — stratégies hybrides">
+        </div>
+        <div class="step-content">
+          <div class="step-number">02</div>
+          <div class="step-title">Capital au travail</div>
+          <p>Le capital est déployé via des modèles quantitatifs et une supervision humaine, avec un suivi des risques en continu.</p>
+        </div>
+      </div>
+
+      <!-- Étape 3 : image à droite -->
+      <div class="step">
+        <div class="step-content">
+          <div class="step-number">03</div>
+          <div class="step-title">Récompenses hebdomadaires</div>
+          <p>Un cube translucide sur une grille lumineuse émet des tokens vers le haut&nbsp;: vos gains s’accumulent automatiquement.</p>
+        </div>
+        <div class="step-media" aria-hidden="true">
+          <img src="step3.png" alt="Récompenses — tokens qui s’élèvent">
+        </div>
+      </div>
+
+      <!-- Étape 4 : image à gauche (flexibilité) -->
+      <div class="step reverse">
+        <div class="step-media" aria-hidden="true">
+          <img src="step4.png" alt="Votre choix : retirer ou réinvestir">
+        </div>
+        <div class="step-content">
+          <div class="step-number">04</div>
+          <div class="step-title">Votre choix, à tout moment</div>
+          <p>Convertissez vos gains en dollars quand vous le souhaitez, ou laissez-les travailler pour l’intérêt composé. <strong>Vous gardez le contrôle.</strong></p>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </div>
+</section>
+
+<section class="perf-hero" id="performance">
+  <div class="container">
+    <h2>Performance</h2>
+
+    <div class="perf-top">
+      <div class="metric">
+        <span class="metric-label">APY estimé</span>
+        <span class="metric-value gradient">24–30%</span>
+      </div>
+
+      <span class="perf-sep" aria-hidden="true"></span>
+
+      <div class="metric">
+        <span class="metric-label">TVL</span>
+        <span class="metric-value gradient">≈ $7 650</span>
+      </div>
+    </div>
+
+    <div class="perf-bottom">
+      <div class="metric tooltip" data-tip="Simulation : le produit n’est pas encore lancé. Valeurs indicatives de ce qu’auraient été les airdrops si le produit avait été live.">
+        <span class="metric-label">Dernier airdrop</span>
+        <span class="metric-value gradient">+1,18%</span>
+        <button class="tip-icon" aria-label="Informations sur le dernier airdrop">ⓘ</button>
+      </div>
+    </div>
+
+    <p class="perf-disclaimer">
+      Les performances historiques ne sont pas une indication des performances futures.
+      Ceci ne constitue pas un conseil en investissement et est fourni à titre informatif uniquement.
+    </p>
+  </div>
+</section>
+
+
+
 
 <section id="roadmap">
   <h2>Roadmap</h2>
@@ -649,54 +1387,6 @@
     });
   </script>
  
-<!-- GSAP Core + CSSPlugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CSSPlugin.min.js"></script>
-<script>
-  gsap.registerPlugin(CSSPlugin);
-
-  (function(){
-    const cards = document.querySelectorAll('.features .card');
-    const total = cards.length;
-    let index = 0;
-    const delay = 3000;
-
-    function updateCoverflow() {
-      cards.forEach((card,i) => {
-        const diff = (i - index + total) % total;
-        let x=0, rotY=0, scale=1, blur=0;
-
-        if (diff === 0) {
-          x=0; rotY=0; scale=1; blur=0;
-        } else if (diff === 1 || diff === total-1) {
-          x     = diff===1 ? -200 : 200;
-          rotY  = diff===1 ?  45  : -45;
-          scale = 0.8; blur = 2;
-        } else {
-          x     = diff<total/2 ? -400 : 400;
-          rotY  = diff<total/2 ?  70  : -70;
-          scale = 0.6; blur = 4;
-        }
-
-        gsap.to(card, {
-          duration: 1,
-          x, rotationY: rotY,
-          scale, filter: `blur(${blur}px)`,
-          ease: 'power3.inOut'
-        });
-      });
-    }
-
-    updateCoverflow();
-    setInterval(() => {
-      index = (index + 1) % total;
-      updateCoverflow();
-    }, delay);
-  })();
-</script>
-
-
-
   <script>
   document.querySelectorAll('#faq .faq-item .question').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -705,5 +1395,127 @@
     });
   });
 </script>
+<script>
+(function(){
+  // scroll container (celui qui scroll horizontalement)
+  const scroll = document.querySelector('#features');
+  if (!scroll) return;
+
+  // track = conteneur des cartes
+  const track = scroll.querySelector('.cards');
+  const cards = Array.from(track.children);
+  if (!cards.length) return;
+
+  // créer le container de dots si absent
+  let dotsContainer = document.getElementById('features-dots');
+  if (!dotsContainer) {
+    dotsContainer = document.createElement('div');
+    dotsContainer.id = 'features-dots';
+    dotsContainer.className = 'features-dots';
+    const wrapper = document.querySelector('.features-wrap');
+    if (wrapper) wrapper.appendChild(dotsContainer);
+    else scroll.parentNode.appendChild(dotsContainer); // fallback
+  }
+
+  // build dots (un par carte)
+  function buildDots() {
+    dotsContainer.innerHTML = '';
+    cards.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', `slide ${i+1}`);
+      btn.addEventListener('click', () => {
+        cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+      });
+      dotsContainer.appendChild(btn);
+    });
+  }
+  buildDots();
+  const dots = Array.from(dotsContainer.querySelectorAll('button'));
+
+  // IntersectionObserver : root = le container scrollable (scroll)
+  const io = new IntersectionObserver((entries) => {
+    // on stocke un ratio sur chaque element
+    entries.forEach(entry => {
+      entry.target.__visRatio = entry.intersectionRatio;
+    });
+    // on choisit la carte avec le meilleur ratio visible
+    let bestIdx = 0, bestRatio = -1;
+    cards.forEach((c, i) => {
+      const r = c.__visRatio || 0;
+      if (r > bestRatio) { bestRatio = r; bestIdx = i; }
+    });
+    // active le dot correspondant
+    dots.forEach((d, i) => d.classList.toggle('active', i === bestIdx));
+  }, {
+    root: scroll,
+    threshold: Array.from({length: 101}, (_, i) => i / 100)
+  });
+
+  // observe chaque carte
+  cards.forEach(c => {
+    c.__visRatio = 0;
+    io.observe(c);
+  });
+
+  // INIT: recentre la première carte visible
+  (function initCenter() {
+    const active = cards[0];
+    if (active) active.scrollIntoView({behavior:'auto', inline:'center'});
+    // small timeout to let intersection observer populate
+    setTimeout(() => { dots[0] && dots[0].classList.add('active'); }, 60);
+  })();
+
+  // resize -> recalcule et recentre la carte active pour éviter désynchronisation
+  window.addEventListener('resize', () => {
+    const activeIdx = dots.findIndex(d => d.classList.contains('active'));
+    const target = cards[ activeIdx >= 0 ? activeIdx : 0 ];
+    if (target) target.scrollIntoView({ behavior: 'auto', inline: 'center' });
+  });
+
+  // keyboard navigation for accessibility
+  dots.forEach((btn, i) => {
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && i > 0) {
+        dots[i-1].focus();
+      } else if (e.key === 'ArrowRight' && i < dots.length - 1) {
+        dots[i+1].focus();
+      }
+    });
+  });
+
+  // helper pour debug
+  window.g12Features = window.g12Features || {};
+  window.g12Features.goTo = (idx) => {
+    if (idx >= 0 && idx < cards.length) cards[idx].scrollIntoView({behavior:'smooth', inline:'center'});
+  };
+})();
+</script>
+<script>
+(function(){
+  const steps = document.querySelectorAll('.steps-list .step');
+  if (!steps.length) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const el = entry.target;
+      // On intensifie quand ~la moitié est visible et proche du centre
+      if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        el.classList.add('inview');
+      } else {
+        el.classList.remove('inview');
+      }
+    });
+  }, {
+    root: null,
+    threshold: [0, .25, .5, .75, 1],
+    rootMargin: "-10% 0px -10% 0px"  // déclenche au passage par le centre
+  });
+
+  steps.forEach(el => io.observe(el));
+})();
+</script>
+
+
 </body>
 </html>
