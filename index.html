@@ -612,30 +612,55 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   .steps-list .step .step-content p{ margin-top: .85rem; }
 }
 
-/* ===== Landing — Performance (KPI ultra-compact) ===== */
+/* ===== Landing — Performance (clean + gaps contrôlés) ===== */
 .perf-hero{
+  /* ajuste ici les gaps des 2 lignes */
+  --pair-gap-1: clamp(9em, 15vw, 25rem); /* APY ↔ TVL */
+  --pair-gap-2: clamp(4rem, 4vw, 6rem);    /* Airdrop ↔ Track */
+
   padding: calc(var(--spacing)*5) 0 calc(var(--spacing)*4);
-  text-align: center;
 }
 .perf-hero h2{
-  font-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.6rem);
+  font-size: clamp(1.9rem, 1.2rem + 2.4vw, 2.8rem);
   color: var(--color-white);
-  margin-bottom: 1.9rem;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-/* Ligne APY + TVL */
-.perf-top{
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr auto 1fr;
-  align-items: end;
-  gap: 1rem;
+/* Paires (lignes) centrées */
+.perf-pair{
+  display: flex !important;            /* force flex si un grid traîne */
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6rem;
 }
+.perf-top{ margin-bottom: 2.5rem; }
+.perf-bottom{
+  gap: 6rem;              /* gap spécifique à la 2e ligne */
+  margin-bottom: 1.5rem;
+}
+
+/* Séparateur vertical entre les métriques */
+.pair-sep{
+  width: 1px;
+  height: 36px;
+  align-self: center;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.22), rgba(255,255,255,.06));
+  opacity: .9;
+  /* espace visuel additionnel autour du filet */
+  margin-inline: calc(var(--pair-gap-1) * .35);
+}
+.perf-bottom .pair-sep{
+  height: 28px;
+  margin-inline: calc(var(--pair-gap-2) * .35);
+}
+
+/* KPI */
 .metric{
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .25rem;
+  gap: .4rem;               /* espace interne label/valeur */
   min-width: 0;
 }
 .metric-label{
@@ -649,8 +674,6 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   font: 800 clamp(1.6rem, 1.2rem + 2.2vw, 3rem)/1 Inter, system-ui;
   white-space: nowrap;
 }
-
-/* Dégradé sur les chiffres (même style que 24–30%) */
 .gradient{
   background: linear-gradient(90deg, #8A0AFF, #00B2FF);
   -webkit-background-clip: text;
@@ -659,87 +682,88 @@ background: linear-gradient(127deg, rgba(138, 10, 255, 1) 0%, rgba(58, 63, 255, 
   text-shadow: 0 0 18px rgba(0,178,255,.25);
 }
 
-/* Séparateur fin entre APY et TVL */
-.perf-sep{
-  width: 1px;
-  height: 36px;
-  align-self: center;
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.22), rgba(255,255,255,.06));
-  opacity: .9;
-}
-
-/* Ligne Airdrop + tooltip */
-.perf-bottom{
-  margin-top: 1.5rem;
-}
-.tooltip{
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-}
+/* Tooltips */
+.tooltip{ position: relative; display: inline-flex; align-items: center; gap: .5rem; }
 .tip-icon{
-  appearance: none;
-  border: 1px solid rgba(255,255,255,.25);
-  background: transparent;
-  color: #fff;
-  font: 700 .85rem/1 Inter, system-ui;
-  border-radius: 999px;
-  width: 1.25rem; height: 1.25rem;
-  display: grid; place-items: center;
-  cursor: help;
-  transition: border-color .2s, box-shadow .2s;
+  appearance:none; border:1px solid rgba(255,255,255,.25);
+  background:transparent; color:#fff;
+  font:700 .85rem/1 Inter, system-ui;
+  border-radius:999px; width:1.25rem; height:1.25rem;
+  display:grid; place-items:center; cursor:help;
+  transition:border-color .2s, box-shadow .2s;
 }
-.tip-icon:hover,
-.tip-icon:focus-visible{
+.tip-icon:hover, .tip-icon:focus-visible{
   border-color: rgba(255,255,255,.5);
   box-shadow: 0 0 0 4px rgba(102,51,255,.12);
   outline: none;
 }
-
-/* Bulle tooltip (CSS-only, via data-attribute) */
 .tooltip::after{
   content: attr(data-tip);
-  position: absolute;
-  left: 50%; transform: translateX(-50%) translateY(8px);
-  bottom: -2.25rem; /* base, sera ajusté en mobile */
-  min-width: 260px; max-width: min(88vw, 520px);
+  position: absolute; left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  bottom: -2.25rem;
+  min-width: 260px; max-width: min(92vw, 560px);
   padding: .55rem .7rem;
-  border: 1px solid rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: 10px;
-  background: rgba(8,8,8,.92);
-  color: var(--color-text);
+  background: rgba(10,12,16,.95);
+  color: rgba(230,238,248,.95);
   font: 500 .85rem/1.35 Inter, system-ui;
   box-shadow: 0 8px 18px rgba(0,0,0,.35);
   opacity: 0; pointer-events: none;
   transition: opacity .2s ease, transform .2s ease;
   z-index: 10;
 }
-.tooltip:hover::after,
-.tooltip:focus-within::after{
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.tooltip:hover::after, .tooltip:focus-within::after{
+  opacity: 1; transform: translateX(-50%) translateY(0);
 }
 
-/* Disclaimer */
+/* Footer : disclaimer à gauche, bouton à droite */
+.perf-footer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
 .perf-disclaimer{
-  margin-top: 1.1rem;
-  font: .85rem/1.5 Inter, system-ui;
-  color: rgba(255,255,255,.75);
+  margin: 0;
+  font-size: .55rem;
+  line-height: 1.45;
+  color: rgba(255,255,255,.55);
+  text-align: left;
+  max-width: 100%;
+  text-justify: auto;
+}
+.perf-actions{
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+.btn-perf{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  padding: .6rem 1rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  width: auto !important; /* évite une largeur fixe héritée */
+  max-width: 100%;
+  text-decoration: none;
 }
 
-/* Responsive — mobile: empile et masque le séparateur */
+/* Responsive */
 @media (max-width: 47.99em){
-  .perf-top{
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: .5rem;
+  .perf-hero{ --pair-gap-1: 1rem; --pair-gap-2: .9rem; }
+  .pair-sep{ display: none; }
+  .perf-footer{
+    flex-direction: column;
+    align-items: stretch;
+    gap: .8rem;
   }
-  .perf-sep{ display: none; }
-  .tooltip::after{
-    bottom: auto; top: calc(100% + .5rem);
-  }
+  .perf-actions{ justify-content: flex-end; } /* reste à droite même en mobile */
 }
+
 
  /* Section Roadmap */
 #roadmap {
@@ -1238,39 +1262,54 @@ body::before {
 
 <section class="perf-hero" id="performance">
   <div class="container">
-    <h2>Performance</h2>
+    <h2>Performance clées</h2>
 
-    <div class="perf-top">
+    <!-- Ligne 1 : APY + TVL -->
+    <div class="perf-top perf-pair">
       <div class="metric">
         <span class="metric-label">APY estimé</span>
         <span class="metric-value gradient">24–30%</span>
       </div>
 
-      <span class="perf-sep" aria-hidden="true"></span>
+      <span class="pair-sep" aria-hidden="true"></span>
 
       <div class="metric">
         <span class="metric-label">TVL</span>
-        <span class="metric-value gradient">≈ $7 650</span>
+        <span class="metric-value gradient">7 650$</span>
       </div>
     </div>
 
-    <div class="perf-bottom">
-      <div class="metric tooltip" data-tip="Simulation : le produit n’est pas encore lancé. Valeurs indicatives de ce qu’auraient été les airdrops si le produit avait été live.">
+    <!-- Ligne 2 : Airdrop + Track record (avec tooltips) -->
+    <div class="perf-bottom perf-pair">
+      <div class="metric tooltip"
+           data-tip="Backtest : le produit n’est pas encore lancé. Ce pourcentage illustre ce qu’auraient été les distributions hebdomadaires si le produit avait été live. Valeur indicative.">
         <span class="metric-label">Dernier airdrop</span>
         <span class="metric-value gradient">+1,18%</span>
-        <button class="tip-icon" aria-label="Informations sur le dernier airdrop">ⓘ</button>
+        <button class="tip-icon" aria-label="Informations : airdrop (simulation)">ⓘ</button>
+      </div>
+
+      <span class="pair-sep small" aria-hidden="true"></span>
+
+      <div class="metric tooltip"
+           data-tip="Track record de backtest : durée couverte par nos tests depuis le démarrage (phase pré-lancement).">
+        <span class="metric-label">Track record</span>
+        <span class="metric-value gradient">184&nbsp;j</span>
+        <button class="tip-icon" aria-label="Informations : track record (backtest)">ⓘ</button>
       </div>
     </div>
 
-    <p class="perf-disclaimer">
-      Les performances historiques ne sont pas une indication des performances futures.
-      Ceci ne constitue pas un conseil en investissement et est fourni à titre informatif uniquement.
-    </p>
+    <!-- Footer : disclaimer à gauche, bouton à droite -->
+    <div class="perf-footer">
+      <p class="perf-disclaimer">
+        Les performances historiques ne sont pas une indication des performances futures.
+        Ceci ne constitue pas un conseil en investissement et est fourni à titre informatif uniquement.
+      </p>
+      <div class="perf-actions">
+        <a href="performance.html" class="btn btn-primary btn-perf">Voir plus</a>
+      </div>
+    </div>
   </div>
 </section>
-
-
-
 
 <section id="roadmap">
   <h2>Roadmap</h2>
