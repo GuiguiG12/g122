@@ -37,6 +37,9 @@ html, body {
   color: var(--color-text);
   font-family: 'Inter', sans-serif;
 }
+html, body { overflow-x: clip; overscroll-behavior-x: none; }
+.features { overflow-anchor: none; } /* évite les re-ancrages qui bousculent le scroll */
+
 
   /* reset box-sizing (réassurance) */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1623,101 +1626,95 @@ body::before {
   });
 </script>
 <script>
+/**
+ * Carrousel "features" — version stable (no scrollIntoView, no resize recenter)
+ * Requiert :
+ *  - un conteneur scrollable :  <div id="features" class="features"> … <div class="cards">…</div></div>
+ *  - un wrapper parent (optionnel) : <div class="features-wrap">…</div>
+ *  - un conteneur de dots :       <div id="features-dots" class="features-dots"></div> (créé si absent)
+ */
 (function(){
-  // scroll container (celui qui scroll horizontalement)
-  const scroll = document.querySelector('#features');
+  // 1) Sélecteurs de base
+  const scroll = document.querySelector('#features');            // conteneur qui SCROLL horizontalement
   if (!scroll) return;
 
-  // track = conteneur des cartes
-  const track = scroll.querySelector('.cards');
-  const cards = Array.from(track.children);
+  const track  = scroll.querySelector('.cards');                 // "rail" qui contient les cartes
+  const cards  = track ? Array.from(track.children) : [];
   if (!cards.length) return;
 
-  // créer le container de dots si absent
+  // 2) Helper : centrer une carte sans toucher au scroll vertical de la page
+  function centerCard(scroller, card, smooth = true) {
+    if (!scroller || !card) return;
+    const targetLeft = card.offsetLeft + card.offsetWidth / 2 - scroller.clientWidth / 2;
+    scroller.scrollTo({ left: Math.max(0, targetLeft), behavior: smooth ? 'smooth' : 'auto' });
+  }
+
+  // 3) Dots — utilise le conteneur existant ou le crée dans le wrapper
   let dotsContainer = document.getElementById('features-dots');
   if (!dotsContainer) {
     dotsContainer = document.createElement('div');
     dotsContainer.id = 'features-dots';
     dotsContainer.className = 'features-dots';
-    const wrapper = document.querySelector('.features-wrap');
-    if (wrapper) wrapper.appendChild(dotsContainer);
-    else scroll.parentNode.appendChild(dotsContainer); // fallback
+    const wrapper = document.querySelector('.features-wrap') || scroll.parentNode;
+    wrapper.appendChild(dotsContainer);
   }
 
-  // build dots (un par carte)
+  // Crée un dot par carte
   function buildDots() {
     dotsContainer.innerHTML = '';
     cards.forEach((_, i) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.setAttribute('aria-label', `slide ${i+1}`);
-      btn.addEventListener('click', () => {
-        cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center' });
-      });
+      btn.setAttribute('aria-label', `Aller à la carte ${i+1}`);
+      btn.addEventListener('click', () => centerCard(scroll, cards[i], true));
       dotsContainer.appendChild(btn);
     });
   }
   buildDots();
   const dots = Array.from(dotsContainer.querySelectorAll('button'));
 
-  // IntersectionObserver : root = le container scrollable (scroll)
+  // 4) Observer : détermine la carte la plus visible dans le viewport horizontal du carrousel
+  const thresholds = Array.from({ length: 101 }, (_, i) => i / 100);
   const io = new IntersectionObserver((entries) => {
-    // on stocke un ratio sur chaque element
-    entries.forEach(entry => {
-      entry.target.__visRatio = entry.intersectionRatio;
-    });
-    // on choisit la carte avec le meilleur ratio visible
+    entries.forEach(entry => { entry.target.__visRatio = entry.intersectionRatio; });
+
+    // carte "gagnante" = plus grand ratio visible
     let bestIdx = 0, bestRatio = -1;
     cards.forEach((c, i) => {
       const r = c.__visRatio || 0;
       if (r > bestRatio) { bestRatio = r; bestIdx = i; }
     });
+
     // active le dot correspondant
     dots.forEach((d, i) => d.classList.toggle('active', i === bestIdx));
-  }, {
-    root: scroll,
-    threshold: Array.from({length: 101}, (_, i) => i / 100)
-  });
+  }, { root: scroll, threshold: thresholds });
 
-  // observe chaque carte
-  cards.forEach(c => {
-    c.__visRatio = 0;
-    io.observe(c);
-  });
+  cards.forEach(c => { c.__visRatio = 0; io.observe(c); });
 
-  // INIT: recentre la première carte visible
-  (function initCenter() {
-    const active = cards[0];
-    if (active) active.scrollIntoView({behavior:'auto', inline:'center'});
-    // small timeout to let intersection observer populate
-    setTimeout(() => { dots[0] && dots[0].classList.add('active'); }, 60);
+  // 5) Init : centre la 1ère carte sans animation + active le premier dot
+  (function initCenter(){
+    const first = cards[0];
+    if (first) centerCard(scroll, first, false);
+    setTimeout(() => { if (dots[0]) dots[0].classList.add('active'); }, 60);
   })();
 
-  // resize -> recalcule et recentre la carte active pour éviter désynchronisation
-  window.addEventListener('resize', () => {
-    const activeIdx = dots.findIndex(d => d.classList.contains('active'));
-    const target = cards[ activeIdx >= 0 ? activeIdx : 0 ];
-    if (target) target.scrollIntoView({ behavior: 'auto', inline: 'center' });
-  });
-
-  // keyboard navigation for accessibility
+  // 6) Accessibilité clavier sur les dots (gauche/droite)
   dots.forEach((btn, i) => {
     btn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft' && i > 0) {
-        dots[i-1].focus();
-      } else if (e.key === 'ArrowRight' && i < dots.length - 1) {
-        dots[i+1].focus();
-      }
+      if (e.key === 'ArrowLeft'  && i > 0) { dots[i - 1].focus(); }
+      if (e.key === 'ArrowRight' && i < dots.length - 1) { dots[i + 1].focus(); }
     });
   });
 
-  // helper pour debug
-  window.g12Features = window.g12Features || {};
-  window.g12Features.goTo = (idx) => {
-    if (idx >= 0 && idx < cards.length) cards[idx].scrollIntoView({behavior:'smooth', inline:'center'});
-  };
+  // 7) API debug (optionnelle)
+  window.g12Features = Object.assign(window.g12Features || {}, {
+    goTo: (idx) => { if (idx >= 0 && idx < cards.length) centerCard(scroll, cards[idx], true); }
+  });
+
+  // IMPORTANT : aucun listener 'resize' qui recentre => évite les "sauts" sur mobile
 })();
 </script>
+
 <script>
 (function(){
   const steps = document.querySelectorAll('.steps-list .step');
