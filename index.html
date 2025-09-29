@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>G12/acceuil</title>
+  <title>G12/accueil</title>
   <!-- Police Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -119,12 +119,13 @@ body.nav-open .nav-container{
 .nav-list{
   display:flex; flex-direction:column; gap:1rem;
 }
+
 .nav-list li a{
-  padding: .75rem 0; min-height:44px;
+  padding: .75rem 1.25; min-height:44px;
   display:flex; align-items:center;             /* centré verticalement */
   font-weight: 500;                              /* fix: au lieu de "font: weight 500px" */
   color:var(--color-white); position:relative; text-decoration:none;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 /* soulignement hover par défaut (sauf pour le bouton) */
 .nav-list li a::after{
@@ -1352,7 +1353,8 @@ body::before {
           <li><a href="#about">Documentation</a></li>
           <li><a href="#performance">Performance</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href="#footer" class="btn btn-primary btn-login">Créer un compte</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="#footer" class="btn btn-primary btn-login">S'inscrire</a></li>
         </ul>
       </div>
     </div>
