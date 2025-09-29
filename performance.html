@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>G12 — Performance</title>
+  <meta name="description" content="Performance détaillée du fonds G12 : rendements, drawdown, volatilité, distributions hebdomadaires." />
+  <style>
+    :root{
+      --bg:#0a0b10;
+      --panel:#0f1117;
+      --panel2:#0c0f14;
+      --text:#cfd3d7;
+      --muted:#9ea4ad;
+      --white:#fff;
+      --primary:#8A0AFF;
+      --secondary:#00B2FF;
+      --success:#23d18b;
+      --danger:#ff6b6b;
+      --radius:14px;
+      --space:18px;
+    }
+    *,*:before,*:after{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+      font:16px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    a{color:#cfe7ff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
+    .sr-only{position:absolute;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+
+    /* Header breadcrumb */
+    header.site{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+    .crumbs{font-weight:600;color:var(--muted);font-size:.9rem}
+    .crumbs a{color:#b7c6ff}
+    .crumbs .sep{opacity:.6;margin:0 .35rem}
+
+    /* Hero */
+    .hero{padding:calc(var(--space)*2) 0 var(--space);text-align:center}
+    .hero h1{margin:0 0 .35rem;font-size:clamp(2rem,1.2rem + 3vw,3rem);color:var(--white)}
+    .hero p{margin:.25rem 0 0;color:var(--muted)}
+
+    /* Tabs période */
+    .range-tabs{margin:1.1rem auto 0;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+    .range-tabs input{position:absolute;left:-9999px}
+    .range-tabs label{
+      padding:.5rem .8rem;border:1px solid rgba(255,255,255,.16);
+      border-radius:999px;cursor:pointer;user-select:none;
+      font:600 .9rem/1 Inter,system-ui;color:var(--white);
+      background:linear-gradient(120deg,rgba(138,10,255,.16),rgba(0,178,255,.14));
+      transition:box-shadow .2s,border-color .2s,transform .06s;
+    }
+    .range-tabs input:checked + label{
+      border-color:rgba(255,255,255,.35);
+      box-shadow:0 0 0 4px rgba(102,51,255,.12) inset,0 8px 24px rgba(0,0,0,.25)
+    }
+
+    /* KPI rail */
+    .kpi-rail{margin:18px auto 10px;display:grid;gap:.75rem;grid-template-columns:1fr; }
+    .kpi{
+      display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:.8rem 1rem;
+    }
+    .k-label{font:600 .85rem/1 Inter,system-ui;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+    .k-value{font:800 1.25rem/1 Inter,system-ui;color:var(--white);white-space:nowrap}
+    .gradient{background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(0,178,255,.25)}
+    .k-note{font:600 .8rem/1 Inter,system-ui;color:var(--muted)}
+    .up{color:var(--success)} .down{color:var(--danger)}
+
+    /* Chart panel */
+    .panel{
+      margin:10px 0;border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);
+      background:var(--panel);padding:10px;position:relative;overflow:hidden
+    }
+    .chart{
+      width:100%;height:auto;display:block; /* SVG responsive */
+    }
+    .chart-caption{margin:.4rem 2px 4px;color:var(--muted);font-size:.85rem}
+
+    /* Bars */
+    .bars{display:flex;flex-direction:column;gap:.65rem;margin:10px 0 2px}
+    .bar{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:.25rem 1rem;align-items:center}
+    .bar-label{font:600 .9rem/1 Inter,system-ui;color:var(--white)}
+    .bar-val{font:700 .95rem/1 Inter,system-ui;color:var(--white)}
+    .bar-track{grid-column:1/-1;position:relative;height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08)}
+    .bar-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--pct,0)*1%);background:linear-gradient(90deg,var(--primary),var(--secondary));box-shadow:0 0 18px rgba(0,178,255,.35)}
+    .bar-fill.negative{right:0;left:auto;background:linear-gradient(90deg,#ff4d4d,#ff7a7a)}
+
+    /* Tableau */
+    .perf-table{margin:.75rem 0 0;border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;background:var(--panel2)}
+    .row{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr;gap:.5rem;padding:.6rem .75rem}
+    .row.head{font:700 .85rem/1 Inter,system-ui;color:var(--white);background:rgba(255,255,255,.03)}
+    .row.data{font:.95rem/1.4 Inter,system-ui;color:var(--text);border-top:1px dashed rgba(255,255,255,.12)}
+
+    /* Footer */
+    .foot{display:flex;flex-direction:column;gap:.75rem;margin:18px 0 36px}
+    .disclaimer{font:.8rem/1.45 Inter,system-ui;color:rgba(255,255,255,.7)}
+    .cta-row{display:flex;justify-content:flex-end}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;padding:.65rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.18);
+      color:var(--white);text-decoration:none;background:linear-gradient(120deg, rgba(138,10,255,.14), rgba(0,178,255,.12))
+    }
+    .btn:hover{border-color:rgba(255,255,255,.35);text-decoration:none}
+
+    /* Desktop */
+    @media(min-width:48em){
+      .kpi-rail{grid-template-columns:1fr 1fr 1fr}
+      .foot{flex-direction:row;align-items:center;justify-content:space-between}
+      .row{grid-template-columns:1fr 1fr 1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="container">
+      <nav class="crumbs">
+        <a href="index.html">Accueil</a> <span class="sep">/</span> <span>Performance</span>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Performance</h1>
+        <p>Suivi des rendements, du risque et des distributions hebdomadaires.</p>
+
+        <!-- Filtres -->
+        <div class="range-tabs" role="tablist" aria-label="Période">
+          <input type="radio" name="range" id="r30" checked><label for="r30" role="tab">30 j</label>
+          <input type="radio" name="range" id="r90"><label for="r90" role="tab">90 j</label>
+          <input type="radio" name="range" id="r1y"><label for="r1y" role="tab">1 an</label>
+          <input type="radio" name="range" id="rinc"><label for="rinc" role="tab">Depuis le début</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="perf-content">
+      <div class="container">
+
+        <!-- KPIs -->
+        <div class="kpi-rail" aria-live="polite">
+          <div class="kpi">
+            <span class="k-label">APY estimé</span>
+            <span class="k-value gradient" id="k-apy">24–30%</span>
+            <span class="k-note">net de frais</span>
+          </div>
+          <div class="kpi">
+            <span class="k-label">Rendement (période)</span>
+            <span class="k-value" id="k-ret">—</span>
+            <span class="k-note">TWR</span>
+          </div>
+          <div class="kpi">
+            <span class="k-label">Risque (MDD / Vol)</span>
+            <span class="k-value" id="k-risk">—</span>
+            <span class="k-note">max drawdown / volatilité</span>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="panel">
+          <svg class="chart" viewBox="0 0 1000 420" role="img" aria-labelledby="ttl">
+            <title id="ttl">Évolution de la valeur de part</title>
+            <!-- defs -->
+            <defs>
+              <linearGradient id="lineGrad" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stop-color="#8A0AFF"/><stop offset="100%" stop-color="#00B2FF"/>
+              </linearGradient>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(0,178,255,.35)"/><stop offset="100%" stop-color="rgba(0,178,255,0)"/>
+              </linearGradient>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="g"/>
+                <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- grid -->
+            <g id="grid" stroke="rgba(255,255,255,.08)" stroke-width="1">
+              <line x1="60" y1="360" x2="980" y2="360"/>
+              <line x1="60" y1="280" x2="980" y2="280"/>
+              <line x1="60" y1="200" x2="980" y2="200"/>
+              <line x1="60" y1="120" x2="980" y2="120"/>
+              <line x1="60" y1="40"  x2="980" y2="40"/>
+              <!-- verticals light -->
+              <g opacity=".5">
+                <line x1="60" y1="40" x2="60" y2="360"/>
+                <line x1="260" y1="40" x2="260" y2="360"/>
+                <line x1="460" y1="40" x2="460" y2="360"/>
+                <line x1="660" y1="40" x2="660" y2="360"/>
+                <line x1="860" y1="40" x2="860" y2="360"/>
+                <line x1="980" y1="40" x2="980" y2="360"/>
+              </g>
+            </g>
+
+            <!-- area + line -->
+            <path id="area" d="" fill="url(#areaGrad)"></path>
+            <path id="line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" filter="url(#glow)"></path>
+
+            <!-- hover group -->
+            <g id="hover" style="display:none">
+              <line id="h-x" x1="0" y1="40" x2="0" y2="360" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+              <circle id="h-dot" cx="0" cy="0" r="4.5" fill="#fff" stroke="rgba(0,0,0,.6)" stroke-width="2"/>
+              <rect id="h-tip-bg" x="0" y="0" rx="8" ry="8" width="140" height="44" fill="rgba(10,12,16,.95)" stroke="rgba(255,255,255,.12)"></rect>
+              <text id="h-tip" x="0" y="0" fill="#e6eef8" font-family="Inter,system-ui" font-size="12"></text>
+            </g>
+          </svg>
+          <div class="chart-caption" id="chart-caption">Évolution de la valeur de part — période sélectionnée.</div>
+        </div>
+
+        <!-- Bars -->
+        <div class="bars">
+          <div class="bar">
+            <span class="bar-label">Rendement du mois</span>
+            <span class="bar-val" id="b-month">—</span>
+            <span class="bar-track"><span class="bar-fill" id="b-month-fill" style="--pct:0"></span></span>
+          </div>
+          <div class="bar">
+            <span class="bar-label">Drawdown max</span>
+            <span class="bar-val" id="b-mdd">—</span>
+            <span class="bar-track"><span class="bar-fill negative" id="b-mdd-fill" style="--pct:0"></span></span>
+          </div>
+          <div class="bar">
+            <span class="bar-label">Volatilité</span>
+            <span class="bar-val" id="b-vol">—</span>
+            <span class="bar-track"><span class="bar-fill" id="b-vol-fill" style="--pct:0"></span></span>
+          </div>
+        </div>
+
+        <!-- Tableau -->
+        <div class="perf-table" role="region" aria-live="polite">
+          <div class="row head"><span>Période</span><span>Rendement</span><span>Meilleure semaine</span><span>Pire semaine</span></div>
+          <div class="row data"><span id="t-per">—</span><span id="t-ret">—</span><span id="t-best">—</span><span id="t-worst">—</span></div>
+        </div>
+
+        <!-- Disclaimer & CTA -->
+        <div class="foot">
+          <p class="disclaimer">Les performances historiques ne sont pas une indication des performances futures. Ceci ne constitue pas un conseil en investissement et est fourni à titre informatif uniquement.</p>
+          <div class="cta-row"><a class="btn" href="index.html#newsletter">S’inscrire aux mises à jour ↗</a></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ====== Données (facile à éditer) ====== -->
+  <script id="perf-data" type="application/json">
+  {
+    "apy_display": "24–30%",
+    "periods": {
+      "r30":  { "label": "30 j",  "nav": [100,100.2,100.4,100.1,100.6,100.9,101.1,101.0,101.4,101.6,101.7,101.5,101.9,102.1,102.4,102.2,102.6,102.9,103.1,103.0,103.3,103.5,103.7,103.6,103.9,104.0,104.1,104.3,104.4,104.5], "best_week": 1.1, "worst_week": -0.6 },
+      "r90":  { "label": "90 j",  "nav": [100,100.1,99.9,100.3,100.7,101.2,101.0,101.6,101.9,102.4,102.2,102.8,103.3,103.1,103.7,104.0,104.6,104.9,105.4,105.1,105.7,106.0,106.6,106.9,107.4,107.1,107.7,108.2,108.6,109.0,109.4,109.1,109.8,110.2,110.7,111.1,111.6,111.2,111.9,112.3,112.9,113.4,113.0,113.7,114.1,114.6,115.0,115.5,115.2,115.8,116.2,116.7,117.1,117.6,117.2,117.9,118.3,118.8,119.2,119.7,119.3,120.0,120.4,120.9,121.3,121.8,121.4,122.1,122.5,123.0,123.4,123.9,124.3,124.8,124.4,125.1,125.5,126.0,126.4,126.9,126.5,127.2,127.6,128.1,128.5,129.0,129.4,129.9,130.3], "best_week": 2.3, "worst_week": -1.5 },
+      "r1y":  { "label": "1 an",  "nav": [100,100.2,100.5,100.8,101.1,101.4,101.7,102.1,102.4,102.8,103.2,103.6,104.1,104.5,105.0,105.4,105.9,106.3,106.8,107.2,107.7,108.1,108.6,109.0,109.5,109.9,110.4,110.8,111.3,111.7,112.2,112.6,113.1,113.5,114.0,114.4,114.9,115.3,115.8,116.2,116.7,117.1,117.6,118.0,118.5,118.9,119.4,119.8,120.3,120.7,121.2,121.6], "best_week": 3.8, "worst_week": -3.1 },
+      "rinc": { "label": "Depuis le début", "nav": [100,100.1,100.2,100.4,100.6,100.9,101.3,101.7,102.2,102.8,103.5,104.3,105.2,106.2,107.3,108.5,109.8,111.2,112.7,114.3,116.0,117.8,119.7,121.7,123.8,126.0,128.3,130.7,133.2,135.8,138.5,141.3], "best_week": 4.2, "worst_week": -3.1 }
+    }
+  }
+  </script>
+
+  <script>
+  (function(){
+    const $ = (s,p=document)=>p.querySelector(s);
+    const $$ = (s,p=document)=>p.querySelectorAll(s);
+
+    // --- helpers ---
+    const pct = (a,b)=> (b-a)/a; // simple return
+    const formatPct = (x)=> (x>0? "+" : x<0? "" : "") + (Math.round(x*1000)/10).toFixed(1) + " %";
+    const clamp = (x,min,max)=> Math.max(min, Math.min(max, x));
+
+    // --- compute metrics ---
+    function metrics(nav){
+      const ret = pct(nav[0], nav[nav.length-1]); // period return
+      // MDD
+      let peak = nav[0], mdd = 0;
+      for (let v of nav){ peak = Math.max(peak,v); mdd = Math.min(mdd, (v-peak)/peak); }
+      // Vol (std des rendements quotidiens * sqrt(365/periodLenApprox))
+      const rs = []; for (let i=1;i<nav.length;i++) rs.push((nav[i]-nav[i-1])/nav[i-1]);
+      const mean = rs.reduce((a,b)=>a+b,0)/rs.length;
+      const variance = rs.reduce((a,b)=>a+(b-mean)*(b-mean),0)/(rs.length||1);
+      const vol = Math.sqrt(variance) * Math.sqrt(365/Math.max(1,rs.length));
+      return {ret, mdd, vol};
+    }
+
+    // --- draw chart (responsive SVG with path) ---
+    function drawChart(svg, nav){
+      const W=1000, H=420, P={l:60,r:20,t:40,b:60};
+      const x0 = P.l, x1 = W-P.r, y0 = H-P.b, y1 = P.t;
+      // y scale with padding
+      let min = Math.min(...nav), max = Math.max(...nav);
+      const pad = (max-min)*0.12 || 1;
+      min -= pad; max += pad;
+
+      const X = (i)=> x0 + (i/(nav.length-1))*(x1-x0);
+      const Y = (v)=> y0 - ( (v-min)/(max-min) )*(y0-y1);
+
+      // path
+      let d = `M ${X(0)} ${Y(nav[0])}`;
+      for(let i=1;i<nav.length;i++){ d += ` L ${X(i)} ${Y(nav[i])}`; }
+      $('#line', svg).setAttribute('d', d);
+      // area
+      let a = d + ` L ${X(nav.length-1)} ${y0} L ${X(0)} ${y0} Z`;
+      $('#area', svg).setAttribute('d', a);
+
+      // tooltip handlers
+      const hover = $('#hover', svg), hx = $('#h-x', svg), hd = $('#h-dot', svg),
+            tip = $('#h-tip', svg), tipbg = $('#h-tip-bg', svg);
+      const show = (e)=>{
+        const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+        const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+        const t = clamp((loc.x - x0)/(x1-x0), 0, 1);
+        const i = Math.round(t*(nav.length-1));
+        const cx = X(i), cy = Y(nav[i]);
+        hover.style.display = 'block';
+        hx.setAttribute('x1', cx); hx.setAttribute('x2', cx);
+        hd.setAttribute('cx', cx); hd.setAttribute('cy', cy);
+
+        const base = nav[0], r = (nav[i]-base)/base;
+        const label = `${(r*100).toFixed(2)} %`;
+        tip.textContent = label;
+
+        // position tooltip
+        const tw = 120, th = 36, pad = 8;
+        let tx = clamp(cx - tw/2, x0, x1 - tw), ty = Math.max(y1+8, cy - th - 10);
+        tipbg.setAttribute('x', tx); tipbg.setAttribute('y', ty); tipbg.setAttribute('width', tw); tipbg.setAttribute('height', th);
+        tip.setAttribute('x', tx + pad); tip.setAttribute('y', ty + th/2 + 4);
+      };
+      const hide = ()=> hover.style.display = 'none';
+      svg.onpointermove = show;
+      svg.onpointerleave = hide;
+      svg.ontouchstart = (e)=>{ if(e.touches[0]) show(e.touches[0]); };
+
+      // caption (optional)
+      $('#chart-caption').textContent = `Évolution de la valeur de part — ${current.label}.`;
+    }
+
+    // --- Bars update ---
+    function updateBars({ret,mdd,vol}, bestWeek, worstWeek, label){
+      // Rendement du mois: approx à partir de ret si période >= 30d
+      const monthRet = (ret && label!=='30 j') ? ret/3 : ret; // simpliste
+      $('#b-month').textContent = (monthRet? formatPct(monthRet): '—');
+      $('#b-month-fill').style.setProperty('--pct', Math.max(0, Math.min(100, (monthRet||0)*100)));
+
+      $('#b-mdd').textContent = formatPct(mdd);
+      $('#b-mdd-fill').style.setProperty('--pct', Math.abs((mdd||0)*100));
+
+      $('#b-vol').textContent = (vol? (vol*100).toFixed(1)+' %' : '—');
+      $('#b-vol-fill').style.setProperty('--pct', Math.min(100, (vol||0)*100));
+
+      // Tableau
+      $('#t-per').textContent = label;
+      $('#t-ret').textContent = formatPct(ret);
+      $('#t-best').textContent = (bestWeek!=null? (bestWeek>0?'+':'')+bestWeek.toFixed(1)+' %':'—');
+      $('#t-worst').textContent = (worstWeek!=null? worstWeek.toFixed(1)+' %':'—');
+    }
+
+    // --- State + init ---
+    const DATA = JSON.parse($('#perf-data').textContent);
+    $('#k-apy').textContent = DATA.apy_display || '—';
+
+    let currentKey = 'r30';
+    let current = DATA.periods[currentKey];
+
+    function applyPeriod(key){
+      currentKey = key;
+      current = DATA.periods[key];
+      const svg = $('.chart');
+      // compute metrics
+      const m = metrics(current.nav);
+      // update UI KPIs
+      $('#k-ret').textContent = formatPct(m.ret);
+      $('#k-risk').textContent = `${formatPct(m.mdd)} / ${(m.vol*100).toFixed(1)} %`;
+      // draw chart
+      drawChart(svg, current.nav);
+      // bars + table
+      updateBars(m, current.best_week, current.worst_week, current.label);
+    }
+
+    // tabs
+    [['r30','r30'],['r90','r90'],['r1y','r1y'],['rinc','rinc']].forEach(([id,key])=>{
+      const input = document.getElementById(id);
+      if(input) input.addEventListener('change', ()=> input.checked && applyPeriod(key));
+    });
+
+    // first paint
+    applyPeriod(currentKey);
+
+    // handle resize (optional; SVG viewBox handles most cases, but we recompute captions/tooltip bounds)
+    let to; window.addEventListener('resize', ()=>{ clearTimeout(to); to=setTimeout(()=>applyPeriod(currentKey), 120); });
+  })();
+  </script>
+</body>
+</html>
