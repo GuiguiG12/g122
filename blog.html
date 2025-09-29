@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>G12 — Blog</title>
+
+  <!-- Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== Variables & base ===== */
+    :root{
+      --color-bg:#050A14;
+      --color-text:#E6EEF8;
+      --color-white:#FFFFFF;
+      --color-primary:#00B2FF;
+      --color-secondary:#6633FF;
+      --color-button:#0066ff;
+      --nav-height:3.75rem;
+      --spacing:1rem;
+      --blur-level:.5rem;
+      --container-max:75rem; /* ~1200px */
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      background:var(--color-bg); color:var(--color-text);
+      font-family:'Inter',system-ui,Arial,sans-serif;
+      overflow-x:clip;
+    }
+    img{max-width:100%;height:auto;display:block}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:none}
+    .container{max-width:var(--container-max);margin:0 auto;padding:0 calc(var(--spacing)*1.25)}
+
+    /* ===== Boutons ===== */
+    .btn{
+      padding:.5rem 1rem;font-weight:600;border-radius:.7rem;text-align:center;
+      transition:background .3s,transform .2s;font-size:1rem;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center
+    }
+    .btn-primary{background:var(--color-button);color:var(--color-white)}
+    .btn-primary:hover{transform:scale(1.05)}
+
+    /* ===== NAV (mêmes onglets que l’index) ===== */
+    nav{
+      position:fixed; top:0; width:100%; z-index:5000;
+      background:transparent; transition:background .3s; height:var(--nav-height);
+    }
+    nav.scrolled{ background:rgba(1, 4, 10, 0.397); backdrop-filter:blur(0.75rem); }
+    .nav-inner{
+      height:var(--nav-height);
+      display:flex; justify-content:space-between; align-items:flex-end;
+      padding:var(--spacing);
+    }
+    .logo img{height:1.8rem}
+
+    /* Burger (mobile) */
+    .nav-toggle{
+      background:none;border:none;cursor:pointer;width:1.5rem;height:1.5rem;z-index:9999;
+      display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;
+    }
+    .nav-toggle span{
+      display:block;width:100%;height:.125rem;background:var(--color-white);
+      transition:transform .3s,opacity .3s;
+    }
+
+    /* Dropdown mobile : à droite sous le burger */
+    .nav-container{
+      position:absolute; top:var(--nav-height); right:var(--spacing); left:auto;
+      display:none; flex-direction:column; gap:1rem;
+      width:min(92vw,20rem);
+      background:rgba(0,0,0,.43); padding:var(--spacing); border-radius:.5rem;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 12px 24px rgba(0,0,0,.35);
+      transform-origin:top right; transform:translateY(-8px); opacity:0;
+      transition:transform .18s ease, opacity .18s ease;
+    }
+    body.nav-open .nav-container{ display:flex; transform:translateY(0); opacity:1; }
+
+    .nav-list{ display:flex; flex-direction:column; gap:1rem; }
+    .nav-list li a{
+      padding:.75rem 0; min-height:44px; display:flex; align-items:center; position:relative;
+      font-weight:500; color:var(--color-white); font-size:1.2rem;
+    }
+    .nav-list li a::after{
+      content:''; position:absolute; left:0; bottom:-.125rem; width:0; height:.125rem;
+      background:var(--color-secondary); transition:width .3s;
+    }
+    .nav-list li a:hover::after{ width:100%; }
+    .nav-list li .btn-login::after{ content:none; }
+
+    /* Backdrop mobile + blur */
+    .nav-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(2px); z-index:4999; display:none; }
+    body.nav-open .nav-backdrop{ display:block; }
+    body>*:not(nav){ transition:filter .3s; }
+    body.nav-open>*:not(nav){ filter:blur(var(--blur-level)); pointer-events:none; }
+
+    /* Desktop (≥64rem) : menu centré, CTA à droite, tailles réduites */
+    @media (min-width:64rem){
+      .nav-toggle{ display:none; }
+      .nav-container{
+        position:static; display:block; width:100%; background:transparent; padding:0; border:0; border-radius:0;
+        box-shadow:none; transform:none; opacity:1;
+      }
+      body.nav-open>*:not(nav):not(.nav-backdrop){ filter:none !important; pointer-events:auto !important; }
+      .nav-backdrop{ display:none !important; }
+      .nav-inner{ align-items:center; }
+
+      .nav-list{
+        position:relative; flex-direction:row; align-items:center; justify-content:center;
+        gap:1rem; width:100%; padding-right:10rem; /* espace réservé pour le CTA à droite */
+      }
+      .nav-list > li:last-child{
+        position:absolute; right:0; top:50%; transform:translateY(-50%);
+      }
+      .nav-list li a{ font-size:.95rem; padding:.55rem .35rem; }
+      .nav-list li .btn-login{ font-size:.95rem; padding:.45rem .85rem; }
+    }
+
+    /* ===== HEADER Blog ===== */
+    main{ padding-top:calc(var(--nav-height) + 24px); }
+    .blog-hero{ text-align:center; padding: clamp(2.5rem, 6vw, 4rem) 0 1.5rem; }
+    .blog-hero h1{ font-size:clamp(2rem,3.6vw,2.6rem); color:var(--color-white); margin-bottom:.5rem; }
+    .blog-hero .lead{ color:rgba(230,238,248,.8); max-width:60ch; margin-inline:auto; }
+
+    /* ===== GRID d'articles ===== */
+    .blog-grid{ display:grid; grid-template-columns:1fr; gap:.875rem; padding-bottom:2rem; }
+    @media (min-width:48rem){ .blog-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media (min-width:64rem){ .blog-grid{ grid-template-columns:repeat(3,1fr); } }
+
+    .blog-card{
+      display:flex; flex-direction:column; gap:.65rem;
+      padding:.85rem; padding-bottom:calc(.85rem + 44px); /* place pour le bouton fixé */
+      border-radius:14px;
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 12px 26px rgba(0,0,0,.25);
+      transition:transform .18s, box-shadow .18s, border-color .18s;
+      position:relative;
+    }
+    .blog-card:hover{ transform:translateY(-2px); box-shadow:0 16px 32px rgba(0,0,0,.32); border-color:rgba(255,255,255,.16); }
+    .blog-card .meta{ display:flex; align-items:center; gap:.5rem; font-size:.8rem; margin-bottom:.2rem; }
+    .blog-card .meta .date{ color:rgba(230,238,248,.7); }
+    .blog-card .meta .tag{
+      padding:.25rem .5rem; border-radius:999px; font-weight:600; letter-spacing:.01em;
+      background:linear-gradient(120deg, rgba(138,10,255,.9), rgba(0,178,255,.9));
+      color:#fff; border:1px solid rgba(255,255,255,.18);
+    }
+    .blog-card h3{ font-size:1rem; color:#fff; line-height:1.25; margin-bottom:.15rem; }
+    /* coupe l’extrait à 3 lignes */
+    .blog-card p{
+      color:rgba(230,238,248,.86); line-height:1.55;
+      display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+      overflow:hidden; text-overflow:ellipsis;
+    }
+
+    /* Bouton Lire plus — fixé en bas à gauche */
+    .read{
+      position:absolute; left:1rem; bottom:1rem;
+      padding:.45rem .8rem; border-radius:.7rem;
+      border:1px solid rgba(255,255,255,.18); color:#fff; cursor:pointer;
+      transition:background .18s, transform .18s;
+    }
+    .read:hover{ background:rgba(255,255,255,.08); transform:translateY(-1px); }
+
+    /* ===== Modal (Option A) ===== */
+    .modal[hidden]{ display:none; }
+    .modal{ position:fixed; inset:0; z-index:6000; display:grid; place-items:center; } /* centre pile */
+    /* Backdrop */
+    .modal__backdrop{
+      position:absolute; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(2px);
+      opacity:0; transition: opacity .22s ease;
+    }
+    .modal.open .modal__backdrop{ opacity:1; }
+
+    /* Dialog avec translation depuis la carte + scale */
+    .modal__dialog{
+      position:relative; margin:0; width:min(900px, calc(100vw - 2rem));
+      max-height:90vh; overflow:auto; background:rgba(10,15,25,.96);
+      border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:1.25rem 1.25rem 1.5rem;
+      box-shadow:0 20px 60px rgba(0,0,0,.5);
+
+      transform: translate(var(--fromX, 0), var(--fromY, 24px)) scale(.98);
+      opacity: 0;
+      transition: transform .33s cubic-bezier(.22,.61,.36,1), opacity .25s ease;
+    }
+    .modal.open .modal__dialog{
+      transform: translate(0,0) scale(1);
+      opacity: 1;
+    }
+
+    .modal__close{
+      position:absolute; top:.5rem; right:.75rem; background:transparent; color:#fff; border:0; font-size:1.5rem; cursor:pointer;
+    }
+
+    .modal__meta{
+      display:flex; align-items:center; gap:.5rem; margin-bottom:.5rem; font-size:.9rem;
+    }
+    .modal__meta .date{ color:rgba(230,238,248,.8); }
+    .modal__meta .tag{
+      padding:.25rem .5rem; border-radius:999px; font-weight:600; letter-spacing:.01em;
+      background:linear-gradient(120deg, rgba(138,10,255,.9), rgba(0,178,255,.9));
+      color:#fff; border:1px solid rgba(255,255,255,.18);
+    }
+
+    .modal__body h3{ color:#fff; margin:0 0 .75rem; font-size:1.2rem; }
+    .modal__content p{ color:rgba(230,238,248,.9); line-height:1.6; margin:.6rem 0; }
+
+    /* Motion-friendly */
+    @media (prefers-reduced-motion: reduce){
+      .modal__dialog{ transition:none !important; transform:none !important; opacity:1 !important; }
+      .modal__backdrop{ transition:none !important; opacity:1 !important; }
+    }
+
+    /* ===== Footer ===== */
+    #footer{ background:var(--color-bg); color:var(--color-text); padding: 3rem 2rem 2rem; font-size:.875rem; border-top:1px solid rgba(255,255,255,.06);}
+    .footer-container{ display:flex; flex-direction:column; gap:2rem; }
+    @media (min-width:48rem){ .footer-container{ flex-direction:row; justify-content:space-between; align-items:flex-start; } }
+    .footer-logo img{ height:2rem; }
+    .footer-links h3,.footer-contact h3{ font-size:1rem; color:var(--color-white); margin-bottom:1rem; }
+    .footer-links ul{ list-style:none; padding:0; }
+    .footer-links li{ margin-bottom:.5rem; }
+    .footer-links a:hover{ color:var(--color-primary); transition:color .3s; }
+    .footer-contact p{ margin:.25rem 0; }
+    .footer-bottom{ text-align:center; margin-top:2rem; font-size:.75rem; color:var(--color-text); }
+
+    /* Fond global (léger décor) */
+    body::before{
+      content:""; position:fixed; inset:0; z-index:-1;
+      background:
+        radial-gradient(120% 160% at 100% 0%, rgba(102,51,255,.22), transparent 60%),
+        radial-gradient(120% 160% at 0% 100%, rgba(0,178,255,.18), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)),
+        var(--color-bg);
+      box-shadow: inset 0 0 200px rgba(0,0,0,.35);
+      pointer-events:none;
+    }
+    /* — Justification du texte (blog) — */
+.blog-card p,
+.modal__content p,
+.blog-hero .lead {
+  text-align: justify;
+  text-justify: inter-word;         /* optimisation pour certains navigateurs */
+  hyphens: auto;                    /* césure FR (lang="fr" déjà présent) */
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  overflow-wrap: break-word;        /* évite les débordements sur mobile */
+  word-break: normal;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Backdrop mobile -->
+  <div class="nav-backdrop" hidden></div>
+
+  <!-- ===== NAV (mêmes onglets que l’index) ===== -->
+  <nav id="navbar">
+    <div class="nav-inner container">
+      <div class="logo">
+        <a href="index.html#home" aria-label="Retour accueil">
+          <img src="logo-off-blanc.png" alt="G12">
+        </a>
+      </div>
+
+      <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-container" id="menu">
+        <ul class="nav-list">
+          <li><a href="index.html#home">Accueil</a></li>
+          <li><a href="index.html#features">Notre produit</a></li>
+          <li><a href="blog.html" aria-current="page">Blog</a></li>
+          <li><a href="index.html#roadmap">Roadmap</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="documentation.html">Documentation</a></li>
+          <li><a href="performance.html">Performance</a></li>
+          <li><a href="index.html#footer">Contact</a></li>
+          <li><a href="index.html#footer" class="btn btn-primary btn-login">S’inscrire</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="blog-hero">
+      <div class="container">
+        <h1>Blog</h1>
+        <p class="lead">Retrouvez ici les dernières nouveautés et l’avancement du projet G12.</p>
+      </div>
+    </section>
+
+    <section class="blog">
+      <div class="container">
+        <div class="blog-grid">
+          <!-- Article 1 -->
+          <article class="blog-card" id="post-1">
+            <div class="meta">
+              <span class="date">29 sept. 2025</span>
+              <span class="tag">MàJ Produit</span>
+            </div>
+            <h3>Pré-lancement : ce qui change côté “Performance”</h3>
+            <p>Graphiques responsive, KPIs auto (rendement, MDD, vol), backtests mis à jour, et CTA reliés à la newsletter pour une lecture claire des résultats.</p>
+            <div class="more">
+              <p>En version étendue, nous détaillons l’architecture de calcul des KPIs, la mise à jour asynchrone des données, et la gouvernance de correction des backtests (audit interne). Une vidéo explicative arrivera bientôt pour passer au crible la méthodologie et les limites.</p>
+            </div>
+            <a href="#post-1" class="read" aria-expanded="false" aria-controls="post-1">Lire plus</a>
+          </article>
+
+          <!-- Article 2 -->
+          <article class="blog-card" id="post-2">
+            <div class="meta">
+              <span class="date">22 sept. 2025</span>
+              <span class="tag">Roadmap</span>
+            </div>
+            <h3>Roadmap T4 : sécurisation & bêta privée</h3>
+            <p>Optimisation carrousel, fix overflow mobile, fermeture du menu au clic extérieur, et collecte des e-mails en double opt-in.</p>
+            <div class="more">
+              <p>Le jalon T4 insiste sur la stabilisation des composants UI et la préparation légale (KYC/AML, politique de retrait). Côté infra, un monitoring 24/7 et des dry-runs prolongés renforcent la résilience. Les invitations bêta seront diffusées progressivement.</p>
+            </div>
+            <a href="#post-2" class="read" aria-expanded="false" aria-controls="post-2">Lire plus</a>
+          </article>
+
+          <!-- Article 3 -->
+          <article class="blog-card" id="post-3">
+            <div class="meta">
+              <span class="date">12 sept. 2025</span>
+              <span class="tag">Design</span>
+            </div>
+            <h3>DA : noir + halos violet/cyan, isométrie minimaliste</h3>
+            <p>Plateau quadrillé lumineux, cubes “verre”, micro-animations sobres, mobile-first — tout pour une UI nette et performante.</p>
+            <div class="more">
+              <p>Nous avons uniformisé les halos, la grille et les transparences pour éviter l’effet “gadget”. Les animations restent discrètes (in-view, hover), et le contraste typographique est optimisé pour la lecture longue.</p>
+            </div>
+            <a href="#post-3" class="read" aria-expanded="false" aria-controls="post-3">Lire plus</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer id="footer">
+    <div class="container footer-container">
+      <div class="footer-logo">
+        <img src="logo-off-blanc.png" alt="G12">
+      </div>
+      <div class="footer-links">
+        <h3>Liens</h3>
+        <ul>
+          <li><a href="index.html#home">Accueil</a></li>
+          <li><a href="index.html#features">Notre produit</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="index.html#roadmap">Roadmap</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="documentation.html">Documentation</a></li>
+          <li><a href="performance.html">Performance</a></li>
+          <li><a href="index.html#footer">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h3>Contact</h3>
+        <p>support@g12.finance</p>
+        <p>Bruxelles, Belgique</p>
+      </div>
+    </div>
+    <div class="footer-bottom container">© 2025 G12 — Tous droits réservés.</div>
+  </footer>
+
+  <!-- ===== MODAL ===== -->
+  <div id="blog-modal" class="modal" hidden>
+    <div class="modal__backdrop"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="blog-modal-title">
+      <button class="modal__close" aria-label="Fermer">×</button>
+      <article class="modal__body">
+        <div class="modal__meta"></div>
+        <h3 id="blog-modal-title"></h3>
+        <div class="modal__content"></div>
+      </article>
+    </div>
+  </div>
+
+  <!-- ===== JS nav + modal ===== -->
+  <script>
+  (function(){
+    /* NAV */
+    const navbar   = document.getElementById('navbar');
+    const toggle   = document.querySelector('.nav-toggle');
+    const menu     = document.getElementById('menu');
+    const backdrop = document.querySelector('.nav-backdrop');
+
+    const isOpen = () => document.body.classList.contains('nav-open');
+    function openMenu(){
+      document.body.classList.add('nav-open');
+      toggle?.setAttribute('aria-expanded','true');
+      toggle?.setAttribute('aria-label','Fermer le menu');
+      if(backdrop){ backdrop.hidden=false; backdrop.style.display='block'; }
+    }
+    function closeMenu(){
+      document.body.classList.remove('nav-open');
+      toggle?.setAttribute('aria-expanded','false');
+      toggle?.setAttribute('aria-label','Ouvrir le menu');
+      if(backdrop){ backdrop.hidden=true; backdrop.style.display='none'; }
+    }
+    toggle?.addEventListener('click', (e)=>{ e.stopPropagation(); isOpen()?closeMenu():openMenu(); });
+    menu?.addEventListener('click', (e)=>{ const a=e.target.closest('a'); if(a) closeMenu(); e.stopPropagation(); });
+    document.addEventListener('click', (e)=>{ if(isOpen() && !menu.contains(e.target) && !toggle.contains(e.target)) closeMenu(); });
+    backdrop?.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && isOpen()) closeMenu(); });
+    const onScroll = () => navbar?.classList.toggle('scrolled', window.scrollY > 0);
+    onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+    /* MODAL */
+    const modal     = document.getElementById('blog-modal');
+    const mBackdrop = modal.querySelector('.modal__backdrop');
+    const mDialog   = modal.querySelector('.modal__dialog');
+    const mClose    = modal.querySelector('.modal__close');
+    const mMeta     = modal.querySelector('.modal__meta');
+    const mTitle    = modal.querySelector('#blog-modal-title');
+    const mContent  = modal.querySelector('.modal__content');
+
+    function openModalFromCard(card){
+      // Meta (date + tag)
+      const meta = card.querySelector('.meta');
+      mMeta.innerHTML = meta ? meta.innerHTML : '';
+
+      // Titre
+      mTitle.textContent = card.querySelector('h3')?.textContent || 'Article';
+
+      // Contenu : résumé + "more"
+      mContent.innerHTML = '';
+      card.querySelectorAll('p, .more p').forEach(p => mContent.appendChild(p.cloneNode(true)));
+
+      // Calcule l'offset depuis le centre de la carte vers le centre de l'écran
+      const r  = card.getBoundingClientRect();
+      const cx = r.left + r.width/2;
+      const cy = r.top  + r.height/2;
+      const vx = window.innerWidth/2;
+      const vy = window.innerHeight/2;
+      const dx = Math.round(vx - cx);
+      const dy = Math.round(vy - cy);
+
+      // Affiche + initialise l'animation (depuis la carte -> centre)
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      mDialog.style.setProperty('--fromX', dx + 'px');
+      mDialog.style.setProperty('--fromY', dy + 'px');
+
+      // Lance la transition
+      requestAnimationFrame(()=> modal.classList.add('open'));
+    }
+
+    function closeModal(){
+      // retire la classe pour animer la fermeture, puis cache après transition
+      modal.classList.remove('open');
+      const after = () => {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        mDialog.removeEventListener('transitionend', after);
+      };
+      mDialog.addEventListener('transitionend', after);
+    }
+
+    mBackdrop.addEventListener('click', closeModal);
+    mClose.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !modal.hidden) closeModal(); });
+
+    // “Lire plus” -> modal
+    document.querySelectorAll('.blog-card .read').forEach(link=>{
+      link.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const card = link.closest('.blog-card');
+        openModalFromCard(card);
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
