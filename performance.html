@@ -1,392 +1,567 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>G12 — Performance</title>
-  <meta name="description" content="Performance détaillée du fonds G12 : rendements, drawdown, volatilité, distributions hebdomadaires." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>G12 / Performance</title>
+
+  <!-- Police -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0a0b10;
-      --panel:#0f1117;
-      --panel2:#0c0f14;
-      --text:#cfd3d7;
-      --muted:#9ea4ad;
-      --white:#fff;
-      --primary:#8A0AFF;
-      --secondary:#00B2FF;
-      --success:#23d18b;
-      --danger:#ff6b6b;
-      --radius:14px;
-      --space:18px;
-    }
-    *,*:before,*:after{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
-      font:16px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    a{color:#cfe7ff;text-decoration:none}
-    a:hover{text-decoration:underline}
-    .container{max-width:1120px;margin:0 auto;padding:0 16px}
-    .sr-only{position:absolute;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+      --color-bg:#050A14;
+      --color-text:#E6EEF8;
+      --color-white:#FFFFFF;
+      --color-primary:#00B2FF;
+      --color-secondary:#6633FF;
+      --color-button:#0066ff;
 
-    /* Header breadcrumb */
-    header.site{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);
-      background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
-    .crumbs{font-weight:600;color:var(--muted);font-size:.9rem}
-    .crumbs a{color:#b7c6ff}
-    .crumbs .sep{opacity:.6;margin:0 .35rem}
+      --max-width:1200px;       /* ✅ largeur max desktop */
+      --nav-height:3.75rem;
+      --spacing:1rem;
+      --blur-level:0.5rem;
 
-    /* Hero */
-    .hero{padding:calc(var(--space)*2) 0 var(--space);text-align:center}
-    .hero h1{margin:0 0 .35rem;font-size:clamp(2rem,1.2rem + 3vw,3rem);color:var(--white)}
-    .hero p{margin:.25rem 0 0;color:var(--muted)}
-
-    /* Tabs période */
-    .range-tabs{margin:1.1rem auto 0;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
-    .range-tabs input{position:absolute;left:-9999px}
-    .range-tabs label{
-      padding:.5rem .8rem;border:1px solid rgba(255,255,255,.16);
-      border-radius:999px;cursor:pointer;user-select:none;
-      font:600 .9rem/1 Inter,system-ui;color:var(--white);
-      background:linear-gradient(120deg,rgba(138,10,255,.16),rgba(0,178,255,.14));
-      transition:box-shadow .2s,border-color .2s,transform .06s;
-    }
-    .range-tabs input:checked + label{
-      border-color:rgba(255,255,255,.35);
-      box-shadow:0 0 0 4px rgba(102,51,255,.12) inset,0 8px 24px rgba(0,0,0,.25)
+      --card-bg:rgba(255,255,255,.05);
+      --card-radius:.5rem;
     }
 
-    /* KPI rail */
-    .kpi-rail{margin:18px auto 10px;display:grid;gap:.75rem;grid-template-columns:1fr; }
-    .kpi{
-      display:flex;align-items:center;justify-content:space-between;gap:.75rem;
-      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:.8rem 1rem;
+    /* Base */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;max-width:100vw;overflow-x:hidden;scroll-behavior:smooth}
+    body{
+      background:var(--color-bg);
+      color:var(--color-text);
+      font-family:'Nunito Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+      font-weight:500;
     }
-    .k-label{font:600 .85rem/1 Inter,system-ui;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
-    .k-value{font:800 1.25rem/1 Inter,system-ui;color:var(--white);white-space:nowrap}
-    .gradient{background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(0,178,255,.25)}
-    .k-note{font:600 .8rem/1 Inter,system-ui;color:var(--muted)}
-    .up{color:var(--success)} .down{color:var(--danger)}
+    img{max-width:100%;height:auto;display:block}
+    a{text-decoration:none;color:inherit}
 
-    /* Chart panel */
-    .panel{
-      margin:10px 0;border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);
-      background:var(--panel);padding:10px;position:relative;overflow:hidden
+    .container{max-width:var(--max-width);margin:0 auto;padding:0 calc(var(--spacing)*1.25)}
+
+    main{padding-top:calc(var(--nav-height) + 1rem)}
+
+    /* ================= NAVBAR (copie fidèle + anim) ================= */
+    nav{
+      position:fixed; top:0; left:0; right:0; z-index:5000;
+      height:var(--nav-height);
+      background:transparent;
+      transition:background .3s ease, backdrop-filter .3s ease;
     }
-    .chart{
-      width:100%;height:auto;display:block; /* SVG responsive */
+    nav.scrolled{ background:rgba(1,4,10,.4); backdrop-filter:blur(.75rem); }
+
+    .nav-inner{
+      height:var(--nav-height);
+      display:flex; justify-content:space-between; align-items:flex-end;
+      padding:var(--spacing);
+      max-width:var(--max-width); margin:0 auto;
     }
-    .chart-caption{margin:.4rem 2px 4px;color:var(--muted);font-size:.85rem}
+    .logo img{ height:1.8rem; }
 
-    /* Bars */
-    .bars{display:flex;flex-direction:column;gap:.65rem;margin:10px 0 2px}
-    .bar{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:.25rem 1rem;align-items:center}
-    .bar-label{font:600 .9rem/1 Inter,system-ui;color:var(--white)}
-    .bar-val{font:700 .95rem/1 Inter,system-ui;color:var(--white)}
-    .bar-track{grid-column:1/-1;position:relative;height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08)}
-    .bar-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--pct,0)*1%);background:linear-gradient(90deg,var(--primary),var(--secondary));box-shadow:0 0 18px rgba(0,178,255,.35)}
-    .bar-fill.negative{right:0;left:auto;background:linear-gradient(90deg,#ff4d4d,#ff7a7a)}
-
-    /* Tableau */
-    .perf-table{margin:.75rem 0 0;border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;background:var(--panel2)}
-    .row{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr;gap:.5rem;padding:.6rem .75rem}
-    .row.head{font:700 .85rem/1 Inter,system-ui;color:var(--white);background:rgba(255,255,255,.03)}
-    .row.data{font:.95rem/1.4 Inter,system-ui;color:var(--text);border-top:1px dashed rgba(255,255,255,.12)}
-
-    /* Footer */
-    .foot{display:flex;flex-direction:column;gap:.75rem;margin:18px 0 36px}
-    .disclaimer{font:.8rem/1.45 Inter,system-ui;color:rgba(255,255,255,.7)}
-    .cta-row{display:flex;justify-content:flex-end}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;padding:.65rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.18);
-      color:var(--white);text-decoration:none;background:linear-gradient(120deg, rgba(138,10,255,.14), rgba(0,178,255,.12))
+    /* Burger (mobile) */
+    .nav-toggle{
+      background:none; border:none; cursor:pointer;
+      width:2.10rem; height:1.5rem; z-index:9999;
+      display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
     }
-    .btn:hover{border-color:rgba(255,255,255,.35);text-decoration:none}
+    .nav-toggle span{
+      display:block; width:100%; height:.125rem; background:var(--color-white);
+      transition:transform .3s, opacity .3s;
+    }
+
+    /* Panneau mobile */
+    .nav-container{
+      position:absolute; top:var(--nav-height); right:var(--spacing); left:auto;
+      display:none; flex-direction:column; gap:1rem;
+      width:min(92vw,20rem);
+      background:rgba(0,0,0,.43);
+      padding:var(--spacing);
+      border-radius:.5rem;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 12px 24px rgba(0,0,0,.35);
+      transform-origin:top right;
+      transform:translateY(-8px);
+      opacity:0;
+      transition:transform .18s ease, opacity .18s ease;
+    }
+    body.nav-open .nav-container{ display:flex; transform:translateY(0); opacity:1; }
+
+    .nav-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1rem; }
+    .nav-list li a{
+      display:flex; align-items:center; min-height:44px;
+      color:var(--color-white); font-weight:500; font-size:1.2rem; position:relative;
+    }
+    .nav-list li a::after{
+      content:''; position:absolute; left:0; bottom:-.125rem; width:0; height:.125rem;
+      background:var(--color-secondary); transition:width .3s;
+    }
+    .nav-list li a:hover::after{ width:100%; }
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.5rem .9rem;line-height:1;
+         font-weight:600;border-radius:1.1rem;transition:transform .2s;background:transparent}
+    .btn-primary{background:var(--color-button);color:#fff}
+    .btn-primary:hover{transform:scale(1.05)}
+    .nav-list li .btn-login{align-self:flex-start}
+    .nav-list li .btn-login::after{content:none}
+
+    /* Blur du contenu + backdrop cliquable quand menu ouvert */
+    body>*:not(nav){transition:filter .3s}
+    body.nav-open>*:not(nav){filter:blur(var(--blur-level)); pointer-events:none}
+    .nav-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(2px); z-index:4999; display:none}
+    body.nav-open .nav-backdrop{display:block}
 
     /* Desktop */
-    @media(min-width:48em){
-      .kpi-rail{grid-template-columns:1fr 1fr 1fr}
-      .foot{flex-direction:row;align-items:center;justify-content:space-between}
-      .row{grid-template-columns:1fr 1fr 1fr 1fr}
+    @media (min-width:64rem){
+      .nav-toggle{display:none}
+      .nav-container{
+        position:static; display:block; width:100%; background:transparent; padding:0;
+        border:0; border-radius:0; box-shadow:none; transform:none; opacity:1;
+      }
+      .nav-inner{align-items:center}
+      .nav-list{flex-direction:row; align-items:center; gap:1rem; justify-content:center; width:100%; padding-right:10rem}
+      .nav-list li a{font-size:.95rem; padding:.55rem .35rem}
+      .nav-list > li:last-child{ position:absolute; right:calc((100vw - var(--max-width))/2 + 1.25rem); top:50%; transform:translateY(-50%); }
+      body.nav-open>*:not(nav):not(.nav-backdrop){ filter:none !important; pointer-events:auto !important; }
+      .nav-backdrop{display:none !important}
     }
+
+    /* Intro */
+.hero-perf .intro {
+  margin-top: .5rem;
+  max-width: 640px;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: left;
+  opacity: .9;
+}
+
+/* ===== Résumé — cartes KPI ===== */
+
+/* grille 2x2 mobile / 4 colonnes desktop */
+.summary-cards{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);   /* ✅ 2 colonnes sur tel */
+  gap: 1rem;
+  margin: 2rem 0 3rem;
+}
+@media (min-width: 64rem){
+  .summary-cards{ grid-template-columns: repeat(4, 1fr); } /* ✅ desktop */
+}
+
+/* carte */
+.summary-cards .card{
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  text-align: center;                /* ✅ textes centrés */
+  display: flex;                     /* centrage vertical + horizontal propre */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+
+  /* ✅ fond: noir (haut) -> gris foncé (bas) */
+  background: linear-gradient(180deg, #000000 0%, #141922 100%);
+  border: 1px solid rgba(255, 255, 255, 0.193);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.summary-cards .card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.35);
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* titre (h3) avec TON dégradé et texte centré */
+.summary-cards .card h3{
+  margin: 0 0 .5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  /* ✅ gradient texte (fourni) */
+  background: linear-gradient(127deg,
+    rgba(138, 10, 255, 1) 0%,
+    rgba(58, 63, 255, 1) 50%,
+    rgba(0, 201, 232, 1) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;                /* indispensable pour voir le gradient */
+  text-align: center;
+}
+
+/* valeur (p) */
+.summary-cards .card p{
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-white, #FFFFFF);
+  letter-spacing: .2px;
+  text-align: center;                /* ✅ centré */
+}
+
+/* petites tailles: un peu plus de hauteur pour l’aération */
+@media (max-width: 23.5rem){
+  .summary-cards .card{ min-height: 120px; }
+}
+
+
+.chart-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: .5rem;
+}
+.chart-buttons button {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #E6EEF8;
+  font-size: 0.85rem;
+  padding: .4rem .8rem;
+  margin-left: .4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.chart-buttons button:hover {
+  background: rgba(0,178,255,0.2);
+  border-color: #00B2FF;
+}
+.chart-buttons button.active {
+  background: #00B2FF;
+  border-color: #00B2FF;
+  color: #fff;
+}
+/* Conteneur du graphique */
+#tvlChart {
+  width: 100% !important;
+  height: 500px !important; /* hauteur par défaut (desktop/tablette) */
+}
+
+/* Ajustements mobiles pour la section TVL */
+@media (max-width: 768px) {
+  .chart-section h2 {
+    text-align: center; /* ✅ centre le titre */
+  }
+
+  #tvlChart {
+    width: 100% !important;    /* ✅ prend toute la largeur dispo */
+    margin-left: -9 !important; /* ✅ colle à gauche */
+    height: 320px !important;  /* ✅ hauteur réduite pour mobile */
+  }
+
+  .chart-section {
+    padding-left: 0;
+    padding-right: 0; /* ✅ supprime marges latérales éventuelles */
+  }
+}
+
+
+
+
+    /* ================== Footer (copie fidèle) ================== */
+    #footer{ background:var(--color-bg); color:var(--color-text); padding:4rem 2rem 2rem; font-size:.875rem; }
+    .footer-container{ display:flex; flex-direction:column; gap:2rem; max-width:var(--max-width); margin:0 auto; }
+    @media (min-width:48em){ .footer-container{ flex-direction:row; justify-content:space-between; align-items:flex-start; } }
+    .footer-logo img{ height:2rem }
+    .footer-links h3,.footer-contact h3,.footer-legal-social h3{ font-size:1rem; color:#fff; margin-bottom:1rem }
+    .footer-links ul{ list-style:none; padding:0 }
+    .footer-links li{ margin-bottom:.5rem }
+    .footer-links a:hover{ color:var(--color-secondary); transition:color .3s }
+    .footer-contact p{ margin:.25rem 0 }
+    .footer-contact a{ color:var(--color-text) }
+    .footer-contact a:hover{ color:var(--color-secondary) }
+    .footer-legal-social .legal{ list-style:none; display:flex; flex-wrap:wrap; gap:1rem; padding:0; margin-bottom:1rem }
+    .footer-legal-social .legal li a{ font-size:.75rem; color:var(--color-text) }
+    .footer-legal-social .legal li a:hover{ color:var(--color-secondary) }
+    .social a{ margin-right:1rem; font-size:1.25rem; color:var(--color-text) }
+    .social a:hover{ color:var(--color-secondary) }
+    .footer-bottom{ text-align:center; margin-top:2rem; font-size:.75rem; color:var(--color-text) }
+
+    /* ============ Contenu page Performance (placeholder) ============ */
+    .hero-perf{ padding:4rem 0 2rem }
+    .hero-perf h1{ font-size:clamp(1.8rem,1.2rem + 2.5vw,2.6rem); margin:0 0 .75rem }
+    .hero-perf p{ margin:0; opacity:.95 }
+
+    .cards{ display:grid; grid-template-columns:1fr; gap:1rem; margin:2rem 0 }
+    @media (min-width:48em){ .cards{ grid-template-columns:repeat(2,1fr) } }
+    @media (min-width:80em){ .cards{ grid-template-columns:repeat(3,1fr) } }
+
+    .card{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      padding:1rem;
+      box-shadow:0 10px 26px rgba(0,0,0,.35);
+    }
+    .card h3{ margin:0 0 .4rem; font-size:1.1rem }
+    .card p{ margin:0; opacity:.9 }
   </style>
 </head>
 <body>
-  <header class="site">
-    <div class="container">
-      <nav class="crumbs">
-        <a href="index.html">Accueil</a> <span class="sep">/</span> <span>Performance</span>
-      </nav>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-inner container">
+      <div class="logo">
+        <a href="index.html#home"><img src="logo-off-blanc.png" alt="G12"></a>
+      </div>
+
+      <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-container" id="menu">
+        <ul class="nav-list">
+          <li><a href="index.html#home">Accueil</a></li>
+          <li><a href="index.html#features">Notre produit</a></li>
+          <li><a href="performance.html">Performance</a></li>
+          <li><a href="documentation.html">Documentation</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="#footer">Contact</a></li>
+          <li><a href="index.html#newsletter" class="btn btn-primary btn-login">S’inscrire</a></li>
+        </ul>
+      </div>
     </div>
-  </header>
+  </nav>
+  <div class="nav-backdrop" hidden></div>
 
-  <main>
-    <section class="hero">
-      <div class="container">
-        <h1>Performance</h1>
-        <p>Suivi des rendements, du risque et des distributions hebdomadaires.</p>
-
-        <!-- Filtres -->
-        <div class="range-tabs" role="tablist" aria-label="Période">
-          <input type="radio" name="range" id="r30" checked><label for="r30" role="tab">30 j</label>
-          <input type="radio" name="range" id="r90"><label for="r90" role="tab">90 j</label>
-          <input type="radio" name="range" id="r1y"><label for="r1y" role="tab">1 an</label>
-          <input type="radio" name="range" id="rinc"><label for="rinc" role="tab">Depuis le début</label>
-        </div>
-      </div>
+  <!-- CONTENU -->
+  <main class="container">
+    <section class="hero-perf">
+      <h1>Performance</h1>
+      <p class="intro">Découvrez nos résultats hebdomadaires et suivez l’évolution du fonds en toute transparence.</p>
     </section>
 
-    <section class="perf-content">
-      <div class="container">
+  <!-- Résumé en cartes -->
+  <section class="summary-cards">
+    <div class="card">
+      <h3>APY estimé</h3>
+      <p>24 – 30 %</p>
+    </div>
+    <div class="card">
+      <h3>Rendement hebdo</h3>
+      <p>+1,18 %</p>
+    </div>
+    <div class="card">
+      <h3>TVL actuelle</h3>
+      <p>7 650 $</p>
+    </div>
+    <div class="card">
+      <h3>Investisseurs</h3>
+      <p>3</p>
+    </div>
+  </section>
 
-        <!-- KPIs -->
-        <div class="kpi-rail" aria-live="polite">
-          <div class="kpi">
-            <span class="k-label">APY estimé</span>
-            <span class="k-value gradient" id="k-apy">24–30%</span>
-            <span class="k-note">net de frais</span>
-          </div>
-          <div class="kpi">
-            <span class="k-label">Rendement (période)</span>
-            <span class="k-value" id="k-ret">—</span>
-            <span class="k-note">TWR</span>
-          </div>
-          <div class="kpi">
-            <span class="k-label">Risque (MDD / Vol)</span>
-            <span class="k-value" id="k-risk">—</span>
-            <span class="k-note">max drawdown / volatilité</span>
-          </div>
-        </div>
+<section class="chart-section">
+  <h2>Évolution de la TVL</h2>
+  <div class="chart-header">
+    <div class="chart-buttons">
+      <button data-range="1M">1M</button>
+      <button data-range="3M">3M</button>
+      <button data-range="6M">6M</button>
+      <button data-range="YTD">YTD</button>
+      <button data-range="ALL">ALL</button>
+    </div>
+  </div>
+  <div id="tvlChart" style="width:100%;height:500px;"></div>
+</section>
 
-        <!-- Chart -->
-        <div class="panel">
-          <svg class="chart" viewBox="0 0 1000 420" role="img" aria-labelledby="ttl">
-            <title id="ttl">Évolution de la valeur de part</title>
-            <!-- defs -->
-            <defs>
-              <linearGradient id="lineGrad" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stop-color="#8A0AFF"/><stop offset="100%" stop-color="#00B2FF"/>
-              </linearGradient>
-              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(0,178,255,.35)"/><stop offset="100%" stop-color="rgba(0,178,255,0)"/>
-              </linearGradient>
-              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="g"/>
-                <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
 
-            <!-- grid -->
-            <g id="grid" stroke="rgba(255,255,255,.08)" stroke-width="1">
-              <line x1="60" y1="360" x2="980" y2="360"/>
-              <line x1="60" y1="280" x2="980" y2="280"/>
-              <line x1="60" y1="200" x2="980" y2="200"/>
-              <line x1="60" y1="120" x2="980" y2="120"/>
-              <line x1="60" y1="40"  x2="980" y2="40"/>
-              <!-- verticals light -->
-              <g opacity=".5">
-                <line x1="60" y1="40" x2="60" y2="360"/>
-                <line x1="260" y1="40" x2="260" y2="360"/>
-                <line x1="460" y1="40" x2="460" y2="360"/>
-                <line x1="660" y1="40" x2="660" y2="360"/>
-                <line x1="860" y1="40" x2="860" y2="360"/>
-                <line x1="980" y1="40" x2="980" y2="360"/>
-              </g>
-            </g>
 
-            <!-- area + line -->
-            <path id="area" d="" fill="url(#areaGrad)"></path>
-            <path id="line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" filter="url(#glow)"></path>
 
-            <!-- hover group -->
-            <g id="hover" style="display:none">
-              <line id="h-x" x1="0" y1="40" x2="0" y2="360" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
-              <circle id="h-dot" cx="0" cy="0" r="4.5" fill="#fff" stroke="rgba(0,0,0,.6)" stroke-width="2"/>
-              <rect id="h-tip-bg" x="0" y="0" rx="8" ry="8" width="140" height="44" fill="rgba(10,12,16,.95)" stroke="rgba(255,255,255,.12)"></rect>
-              <text id="h-tip" x="0" y="0" fill="#e6eef8" font-family="Inter,system-ui" font-size="12"></text>
-            </g>
-          </svg>
-          <div class="chart-caption" id="chart-caption">Évolution de la valeur de part — période sélectionnée.</div>
-        </div>
-
-        <!-- Bars -->
-        <div class="bars">
-          <div class="bar">
-            <span class="bar-label">Rendement du mois</span>
-            <span class="bar-val" id="b-month">—</span>
-            <span class="bar-track"><span class="bar-fill" id="b-month-fill" style="--pct:0"></span></span>
-          </div>
-          <div class="bar">
-            <span class="bar-label">Drawdown max</span>
-            <span class="bar-val" id="b-mdd">—</span>
-            <span class="bar-track"><span class="bar-fill negative" id="b-mdd-fill" style="--pct:0"></span></span>
-          </div>
-          <div class="bar">
-            <span class="bar-label">Volatilité</span>
-            <span class="bar-val" id="b-vol">—</span>
-            <span class="bar-track"><span class="bar-fill" id="b-vol-fill" style="--pct:0"></span></span>
-          </div>
-        </div>
-
-        <!-- Tableau -->
-        <div class="perf-table" role="region" aria-live="polite">
-          <div class="row head"><span>Période</span><span>Rendement</span><span>Meilleure semaine</span><span>Pire semaine</span></div>
-          <div class="row data"><span id="t-per">—</span><span id="t-ret">—</span><span id="t-best">—</span><span id="t-worst">—</span></div>
-        </div>
-
-        <!-- Disclaimer & CTA -->
-        <div class="foot">
-          <p class="disclaimer">Les performances historiques ne sont pas une indication des performances futures. Ceci ne constitue pas un conseil en investissement et est fourni à titre informatif uniquement.</p>
-          <div class="cta-row"><a class="btn" href="index.html#newsletter">S’inscrire aux mises à jour ↗</a></div>
-        </div>
-
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="container footer-container">
+      <div class="footer-logo">
+        <img src="logo-off-blanc.png" alt="Logo G12">
       </div>
-    </section>
-  </main>
+      <div class="footer-links">
+        <h3>Liens utiles</h3>
+        <ul>
+          <li><a href="index.html#home">Accueil</a></li>
+          <li><a href="index.html#features">Notre produit</a></li>
+          <li><a href="index.html#roadmap">Roadmap</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="documentation.html">Documentation</a></li>
+          <li><a href="performance.html">Performance</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h3>Contact</h3>
+        <p><a href="mailto:support@g12.finance">support@g12.finance</a></p>
+      </div>
+      <div class="footer-legal-social">
+        <ul class="legal">
+          <li><a href="#">Conditions générales</a></li>
+          <li><a href="#">Politique de confidentialité</a></li>
+        </ul>
+        <div class="social">
+          <a href="#" aria-label="Twitter">Twitter</a>
+          <a href="#" aria-label="LinkedIn">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2025 G12. Tous droits réservés.</div>
+  </footer>
 
-  <!-- ====== Données (facile à éditer) ====== -->
-  <script id="perf-data" type="application/json">
-  {
-    "apy_display": "24–30%",
-    "periods": {
-      "r30":  { "label": "30 j",  "nav": [100,100.2,100.4,100.1,100.6,100.9,101.1,101.0,101.4,101.6,101.7,101.5,101.9,102.1,102.4,102.2,102.6,102.9,103.1,103.0,103.3,103.5,103.7,103.6,103.9,104.0,104.1,104.3,104.4,104.5], "best_week": 1.1, "worst_week": -0.6 },
-      "r90":  { "label": "90 j",  "nav": [100,100.1,99.9,100.3,100.7,101.2,101.0,101.6,101.9,102.4,102.2,102.8,103.3,103.1,103.7,104.0,104.6,104.9,105.4,105.1,105.7,106.0,106.6,106.9,107.4,107.1,107.7,108.2,108.6,109.0,109.4,109.1,109.8,110.2,110.7,111.1,111.6,111.2,111.9,112.3,112.9,113.4,113.0,113.7,114.1,114.6,115.0,115.5,115.2,115.8,116.2,116.7,117.1,117.6,117.2,117.9,118.3,118.8,119.2,119.7,119.3,120.0,120.4,120.9,121.3,121.8,121.4,122.1,122.5,123.0,123.4,123.9,124.3,124.8,124.4,125.1,125.5,126.0,126.4,126.9,126.5,127.2,127.6,128.1,128.5,129.0,129.4,129.9,130.3], "best_week": 2.3, "worst_week": -1.5 },
-      "r1y":  { "label": "1 an",  "nav": [100,100.2,100.5,100.8,101.1,101.4,101.7,102.1,102.4,102.8,103.2,103.6,104.1,104.5,105.0,105.4,105.9,106.3,106.8,107.2,107.7,108.1,108.6,109.0,109.5,109.9,110.4,110.8,111.3,111.7,112.2,112.6,113.1,113.5,114.0,114.4,114.9,115.3,115.8,116.2,116.7,117.1,117.6,118.0,118.5,118.9,119.4,119.8,120.3,120.7,121.2,121.6], "best_week": 3.8, "worst_week": -3.1 },
-      "rinc": { "label": "Depuis le début", "nav": [100,100.1,100.2,100.4,100.6,100.9,101.3,101.7,102.2,102.8,103.5,104.3,105.2,106.2,107.3,108.5,109.8,111.2,112.7,114.3,116.0,117.8,119.7,121.7,123.8,126.0,128.3,130.7,133.2,135.8,138.5,141.3], "best_week": 4.2, "worst_week": -3.1 }
-    }
-  }
-  </script>
-
+  <!-- ================== JS NAVBAR (animations) ================== -->
   <script>
-  (function(){
-    const $ = (s,p=document)=>p.querySelector(s);
-    const $$ = (s,p=document)=>p.querySelectorAll(s);
+    (function(){
+      const body = document.body;
+      const nav = document.getElementById('navbar');
+      const burger = document.querySelector('.nav-toggle');
+      const menu = document.getElementById('menu');
+      const backdrop = document.querySelector('.nav-backdrop');
 
-    // --- helpers ---
-    const pct = (a,b)=> (b-a)/a; // simple return
-    const formatPct = (x)=> (x>0? "+" : x<0? "" : "") + (Math.round(x*1000)/10).toFixed(1) + " %";
-    const clamp = (x,min,max)=> Math.max(min, Math.min(max, x));
-
-    // --- compute metrics ---
-    function metrics(nav){
-      const ret = pct(nav[0], nav[nav.length-1]); // period return
-      // MDD
-      let peak = nav[0], mdd = 0;
-      for (let v of nav){ peak = Math.max(peak,v); mdd = Math.min(mdd, (v-peak)/peak); }
-      // Vol (std des rendements quotidiens * sqrt(365/periodLenApprox))
-      const rs = []; for (let i=1;i<nav.length;i++) rs.push((nav[i]-nav[i-1])/nav[i-1]);
-      const mean = rs.reduce((a,b)=>a+b,0)/rs.length;
-      const variance = rs.reduce((a,b)=>a+(b-mean)*(b-mean),0)/(rs.length||1);
-      const vol = Math.sqrt(variance) * Math.sqrt(365/Math.max(1,rs.length));
-      return {ret, mdd, vol};
-    }
-
-    // --- draw chart (responsive SVG with path) ---
-    function drawChart(svg, nav){
-      const W=1000, H=420, P={l:60,r:20,t:40,b:60};
-      const x0 = P.l, x1 = W-P.r, y0 = H-P.b, y1 = P.t;
-      // y scale with padding
-      let min = Math.min(...nav), max = Math.max(...nav);
-      const pad = (max-min)*0.12 || 1;
-      min -= pad; max += pad;
-
-      const X = (i)=> x0 + (i/(nav.length-1))*(x1-x0);
-      const Y = (v)=> y0 - ( (v-min)/(max-min) )*(y0-y1);
-
-      // path
-      let d = `M ${X(0)} ${Y(nav[0])}`;
-      for(let i=1;i<nav.length;i++){ d += ` L ${X(i)} ${Y(nav[i])}`; }
-      $('#line', svg).setAttribute('d', d);
-      // area
-      let a = d + ` L ${X(nav.length-1)} ${y0} L ${X(0)} ${y0} Z`;
-      $('#area', svg).setAttribute('d', a);
-
-      // tooltip handlers
-      const hover = $('#hover', svg), hx = $('#h-x', svg), hd = $('#h-dot', svg),
-            tip = $('#h-tip', svg), tipbg = $('#h-tip-bg', svg);
-      const show = (e)=>{
-        const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
-        const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
-        const t = clamp((loc.x - x0)/(x1-x0), 0, 1);
-        const i = Math.round(t*(nav.length-1));
-        const cx = X(i), cy = Y(nav[i]);
-        hover.style.display = 'block';
-        hx.setAttribute('x1', cx); hx.setAttribute('x2', cx);
-        hd.setAttribute('cx', cx); hd.setAttribute('cy', cy);
-
-        const base = nav[0], r = (nav[i]-base)/base;
-        const label = `${(r*100).toFixed(2)} %`;
-        tip.textContent = label;
-
-        // position tooltip
-        const tw = 120, th = 36, pad = 8;
-        let tx = clamp(cx - tw/2, x0, x1 - tw), ty = Math.max(y1+8, cy - th - 10);
-        tipbg.setAttribute('x', tx); tipbg.setAttribute('y', ty); tipbg.setAttribute('width', tw); tipbg.setAttribute('height', th);
-        tip.setAttribute('x', tx + pad); tip.setAttribute('y', ty + th/2 + 4);
+      const openMenu = () => {
+        body.classList.add('nav-open');
+        burger.setAttribute('aria-expanded', 'true');
+        backdrop.removeAttribute('hidden');
       };
-      const hide = ()=> hover.style.display = 'none';
-      svg.onpointermove = show;
-      svg.onpointerleave = hide;
-      svg.ontouchstart = (e)=>{ if(e.touches[0]) show(e.touches[0]); };
+      const closeMenu = () => {
+        body.classList.remove('nav-open');
+        burger.setAttribute('aria-expanded', 'false');
+        backdrop.setAttribute('hidden','');
+      };
+      const toggleMenu = () => body.classList.contains('nav-open') ? closeMenu() : openMenu();
 
-      // caption (optional)
-      $('#chart-caption').textContent = `Évolution de la valeur de part — ${current.label}.`;
-    }
+      // Burger click
+      burger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
 
-    // --- Bars update ---
-    function updateBars({ret,mdd,vol}, bestWeek, worstWeek, label){
-      // Rendement du mois: approx à partir de ret si période >= 30d
-      const monthRet = (ret && label!=='30 j') ? ret/3 : ret; // simpliste
-      $('#b-month').textContent = (monthRet? formatPct(monthRet): '—');
-      $('#b-month-fill').style.setProperty('--pct', Math.max(0, Math.min(100, (monthRet||0)*100)));
+      // Backdrop click
+      backdrop.addEventListener('click', closeMenu);
 
-      $('#b-mdd').textContent = formatPct(mdd);
-      $('#b-mdd-fill').style.setProperty('--pct', Math.abs((mdd||0)*100));
+      // ESC pour fermer
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMenu();
+      });
 
-      $('#b-vol').textContent = (vol? (vol*100).toFixed(1)+' %' : '—');
-      $('#b-vol-fill').style.setProperty('--pct', Math.min(100, (vol||0)*100));
+      // Changement de fond au scroll
+      const onScroll = () => {
+        if (window.scrollY > 8) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
 
-      // Tableau
-      $('#t-per').textContent = label;
-      $('#t-ret').textContent = formatPct(ret);
-      $('#t-best').textContent = (bestWeek!=null? (bestWeek>0?'+':'')+bestWeek.toFixed(1)+' %':'—');
-      $('#t-worst').textContent = (worstWeek!=null? worstWeek.toFixed(1)+' %':'—');
-    }
+      // Fermer le menu si on resize en desktop
+      const mq = window.matchMedia('(min-width: 64rem)');
+      const handleMQ = () => { if (mq.matches) closeMenu(); };
+      mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
 
-    // --- State + init ---
-    const DATA = JSON.parse($('#perf-data').textContent);
-    $('#k-apy').textContent = DATA.apy_display || '—';
-
-    let currentKey = 'r30';
-    let current = DATA.periods[currentKey];
-
-    function applyPeriod(key){
-      currentKey = key;
-      current = DATA.periods[key];
-      const svg = $('.chart');
-      // compute metrics
-      const m = metrics(current.nav);
-      // update UI KPIs
-      $('#k-ret').textContent = formatPct(m.ret);
-      $('#k-risk').textContent = `${formatPct(m.mdd)} / ${(m.vol*100).toFixed(1)} %`;
-      // draw chart
-      drawChart(svg, current.nav);
-      // bars + table
-      updateBars(m, current.best_week, current.worst_week, current.label);
-    }
-
-    // tabs
-    [['r30','r30'],['r90','r90'],['r1y','r1y'],['rinc','rinc']].forEach(([id,key])=>{
-      const input = document.getElementById(id);
-      if(input) input.addEventListener('change', ()=> input.checked && applyPeriod(key));
-    });
-
-    // first paint
-    applyPeriod(currentKey);
-
-    // handle resize (optional; SVG viewBox handles most cases, but we recompute captions/tooltip bounds)
-    let to; window.addEventListener('resize', ()=>{ clearTimeout(to); to=setTimeout(()=>applyPeriod(currentKey), 120); });
-  })();
+      // Fermer si on clique un lien du menu (UX)
+      menu.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => closeMenu());
+      });
+    })();
   </script>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script>
+  const chartDom = document.getElementById('tvlChart');
+  const tvlChart = echarts.init(chartDom);
+
+  // ========= Données hebdo =========
+  const allWeeks = [
+    '01/04','08/04','15/04','22/04','29/04',   // Avril
+    '06/05','13/05','20/05','27/05',           // Mai
+    '03/06','10/06','17/06','24/06',           // Juin
+    '01/07','08/07','15/07','22/07','29/07',   // Juil
+    '05/08','12/08','19/08','26/08',           // Août (↓)
+    '02/09','09/09','16/09','23/09','29/09'    // Sept
+  ];
+
+  const allData = [
+    510.42, 563.18, 591.77, 579.64, 683.22,      // Avril
+    2712.05, 2468.34, 2559.91, 3003.27,             // Mai
+    4612.49, 5247.83, 5462.15, 5889.42,          // Juin
+    6410.37, 6094.66, 6387.14, 6672.89, 6598.54, // Juil
+    7476.12, 6193.88, 6415.47, 6523.66,          // Août (≈ -1200)
+    7544.29, 7217.53, 7829.41, 7478.22, 7680.37  // Sept
+  ];
+
+  // ========= Ranges =========
+  function getData(range){
+    if (range === '1M')  return { labels: allWeeks.slice(-4),  data: allData.slice(-4)  };
+    if (range === '3M')  return { labels: allWeeks.slice(-12), data: allData.slice(-12) };
+    if (range === '6M')  return { labels: allWeeks,            data: allData }; // ici on a 6 mois pile
+    if (range === 'YTD') return { labels: allWeeks,            data: allData };
+    return { labels: allWeeks, data: allData }; // ALL
+  }
+
+  function render(range){
+    const { labels, data } = getData(range);
+    const option = {
+      backgroundColor: '#050A14',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross' },
+        backgroundColor: 'rgba(0,0,0,0.75)',
+        borderColor: '#00B2FF',
+        textStyle: { color: '#E6EEF8' }
+      },
+      grid: { left: 40, right: 20, top: 20, bottom: 30, containLabel: true },
+      dataZoom: [{ type: 'inside', throttle: 30 }],
+      xAxis: {
+        type: 'category',
+        data: labels,
+        axisLine: { lineStyle: { color: '#E6EEF8' } },
+        axisLabel: { color: '#E6EEF8', interval: 'auto', hideOverlap: true }
+      },
+      yAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: '#E6EEF8' } },
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+        axisLabel: { color: '#E6EEF8' }
+      },
+      series: [{
+        name: 'TVL ($)',
+        type: 'line',
+        data,
+        smooth: true,
+        showSymbol: true,
+        symbol: 'circle',
+        symbolSize: 6,
+        lineStyle: {
+          width: 3,
+          color: new echarts.graphic.LinearGradient(0,0,1,0,[
+            { offset: 0,   color: '#8A0AFF' },
+            { offset: 0.5, color: '#3A3FFF' },
+            { offset: 1,   color: '#00C9E8' }
+          ])
+        },
+        areaStyle: {
+          opacity: 0.15,
+          color: new echarts.graphic.LinearGradient(0,0,0,1,[
+            { offset: 0, color: '#00B2FF' },
+            { offset: 1, color: 'transparent' }
+          ])
+        },
+        itemStyle: { color: '#00B2FF', borderColor: '#fff', borderWidth: 1.2 }
+      }]
+    };
+    tvlChart.setOption(option, true);
+  }
+
+  // ===== Init par défaut en 6M =====
+  render('6M');
+  window.addEventListener('resize', () => tvlChart.resize());
+
+  // ===== Boutons (si tu les as dans ton HTML) =====
+  document.querySelectorAll('.chart-buttons button')?.forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chart-buttons button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render(btn.dataset.range);
+    });
+  });
+  const def = document.querySelector('.chart-buttons button[data-range="6M"]');
+  if (def) def.classList.add('active');
+</script>
+
+
 </body>
 </html>
