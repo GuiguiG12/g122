@@ -1347,15 +1347,16 @@ body::before {
         <span></span><span></span><span></span>
       </button>
       <div class="nav-container" id="menu">
-        <ul class="nav-list">
-          <li><a href="#home">Accueil</a></li>
-          <li><a href="#product">Notre produit</a></li>
-          <li><a href="#about">Documentation</a></li>
-          <li><a href="#performance">Performance</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <li><a href="blog.html">Blog</a></li>
-          <li><a href="#footer" class="btn btn-primary btn-login">S'inscrire</a></li>
-        </ul>
+      <ul class="nav-list">
+  <li><a href="#home">Accueil</a></li>
+  <li><a href="#features">Notre produit</a></li>     <!-- ↩︎ vers le carrousel -->
+  <li><a href="performance.html">Performance</a></li> <!-- ↩︎ page dédiée -->
+  <li><a href="documentation.html">Documentation</a></li>
+  <li><a href="blog.html">Blog</a></li>
+  <li><a href="#footer">Contact</a></li>              <!-- ↩︎ footer -->
+  <li><a href="#newsletter" class="btn btn-primary btn-login">S’inscrire</a></li> <!-- ↩︎ newsletter -->
+</ul>
+
       </div>
     </div>
   </nav>
@@ -1370,15 +1371,20 @@ body::before {
       <h1><span>Croissance.</span><span>Simplifié.</span><span>Garantie.</span></h1>
       <p>Les rendements <strong>DeFI</strong> sont complexes.<br>G12 les rend <strong>Simples</strong>.</p>
       <div class="cta-group">
-        <a href="#" class="btn btn-primary cta">S'inscrire</a>
-        <a href="#" class="btn btn-secondary cta-secondary">En savoir plus</a>
+      <a href="#newsletter" class="btn btn-primary cta">S’inscrire</a>
+<a href="#investir"   class="btn btn-secondary cta-secondary">En savoir plus</a>
+
       </div>
     </div>
   </section>
 
   <!-- Project Section -->
-  <section class="project">
+    <section class="project">
     <div class="container">
+      <section id="investir" class="section-invest">
+  <!-- contenu existant : “Investir avec maîtrise et sérénité” -->
+</section>
+
       <h2>Investir avec maîtrise et sérénité</h2>
       <p class="lead">G12 est un fonds d’investissement en cryptomonnaies qui rend accessibles des stratégies professionnelles : modèles quantitatifs propriétaires + gestion active, visant des rendements maîtrisés et un suivi transparent.</p>
 <small class="muted" style="display:block;margin-top:0.6rem;color:rgba(224,224,224,0.6);">Phase pilote — accès limité sur invitation</small>
