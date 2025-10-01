@@ -8,6 +8,8 @@
   <!-- Police -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+
+
   <style>
     :root{
       --color-bg:#050A14;
@@ -25,6 +27,27 @@
       --card-bg:rgba(255,255,255,.05);
       --card-radius:.5rem;
     }
+      /* --- Transition fade entre pages --- */
+html.is-animating body {
+  opacity: 0;
+  transition: opacity .28s ease; /* durée sortie */
+}
+/* État de base : invisible au chargement */
+body {
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+/* Quand prêt → visible */
+body.page-loaded {
+  opacity: 1;
+}
+
+/* Sortie (clic lien) */
+html.is-animating body {
+  opacity: 0;
+}
+
 
     /* Base */
     *,*::before,*::after{box-sizing:border-box}
@@ -127,14 +150,31 @@
     }
 
     /* Intro */
+
+
 .hero-perf .intro {
-  margin-top: .5rem;
+  margin-top: 5rem;
   max-width: 640px;
-  font-size: 1rem;
+  font-size: 4rem;
   line-height: 1.5;
   text-align: left;
   opacity: .9;
 }
+.update-note {
+  font-size: 0.8rem;
+  text-align: left;
+  margin-top: 0.3rem;
+  color: #aaa;
+  font-style: italic;
+}
+#performance h2 {
+  font-size: 2.5rem;   /* ou la taille que tu veux */
+  font-weight: 700;
+  margin-top: 5rem;    /* espace au-dessus */
+  text-align: left;  /* si tu veux le garder centré */
+}
+
+
 
 /* ===== Résumé — cartes KPI ===== */
 
@@ -163,8 +203,8 @@
   min-height: 110px;
 
   /* ✅ fond: noir (haut) -> gris foncé (bas) */
-  background: linear-gradient(180deg, #000000 0%, #141922 100%);
-  border: 1px solid rgba(255, 255, 255, 0.193);
+  background: linear-gradient(180deg, #050a14 0%, #f4f5f70d 100%);
+  border: 0px solid rgba(255, 255, 255, 0);
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
@@ -213,7 +253,7 @@
   margin-bottom: .5rem;
 }
 .chart-buttons button {
-  background: rgba(255,255,255,0.05);
+  background: #050a14;
   border: 1px solid rgba(255,255,255,0.15);
   color: #E6EEF8;
   font-size: 0.85rem;
@@ -244,17 +284,127 @@
     text-align: center; /* ✅ centre le titre */
   }
 
-  #tvlChart {
-    width: 100% !important;    /* ✅ prend toute la largeur dispo */
-    margin-left: -9 !important; /* ✅ colle à gauche */
-    height: 320px !important;  /* ✅ hauteur réduite pour mobile */
-  }
-
   .chart-section {
     padding-left: 0;
     padding-right: 0; /* ✅ supprime marges latérales éventuelles */
   }
 }
+/* ===== TVL : plein écran propre & collé à gauche (mobile only) ===== */
+@media (max-width: 768px) {
+  /* on fait sortir la section du padding de .container pour prendre tout l'écran */
+  .chart-section {
+    position: relative;
+    left: 50%;
+    right: 50%;
+    width: 100vw;
+    margin-left: -50vw;   /* full-bleed à gauche */
+    margin-right: -50vw;  /* full-bleed à droite */
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* titre centré */
+  .chart-section h2 {
+    text-align: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* boutons: petite respiration */
+  .chart-header {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* le conteneur chart occupe 100% de la section */
+  #tvlChart {
+    width: 100% !important;
+    height: 320px !important;   /* plus compact sur mobile */
+    margin-left: 0 !important;  /* pas de marge parasite */
+  }
+}
+
+/* même style de boutons que la TVL */
+#weekly-returns .chart-header { display:flex; justify-content:flex-end; margin-bottom:.5rem }
+#weekly-returns .chart-buttons button{
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #E6EEF8; font-size:.85rem; padding:.4rem .8rem; margin-left:.4rem;
+  border-radius: 6px; cursor:pointer; transition: all .2s;
+}
+#weekly-returns .chart-buttons button:hover{ background: rgba(0,178,255,0.2); border-color:#00B2FF }
+#weekly-returns .chart-buttons button.active{ background:#00B2FF; border-color:#00B2FF; color:#fff }
+
+/* Mobile : titre centré et hauteur compacte */
+@media (max-width:768px){
+  #weekly-returns h2{ text-align:center }
+  #weeklyChart{ height:300px !important }
+}
+
+/* ==== GRID (desktop 1x2, mobile empilé) ==== */
+.analytics-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1rem;
+  margin:2rem 0 3rem;
+}
+@media (min-width: 64rem){
+  .analytics-grid{
+    grid-template-columns:1fr 1fr; /* 1x2 sur desktop */
+    align-items:start;
+  }
+}
+
+/* Panels style (match tes cartes) */
+.panel{
+  border:0px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  background: #050a14;
+  padding:1rem;
+}
+.panel h2{ margin:0 0 .75rem; font-size:1.25rem }
+
+.chart-header{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:.5rem;
+}
+.chart-buttons button{
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #E6EEF8;
+  font-size: 0.85rem;
+  padding: .4rem .8rem;
+  margin-left: .4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.chart-buttons button:hover{ background: rgba(0,178,255,0.2); border-color:#00B2FF }
+.chart-buttons button.active{ background:#00B2FF; border-color:#00B2FF; color:#fff }
+
+/* ==== MOBILE : même “full-bleed/padding” que la TVL ==== */
+@media (max-width: 768px){
+  .analytics-grid{
+    position: relative;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .panel{
+    border-radius:0;           /* même rendu plein écran que la TVL */
+    border-left:0; border-right:0;
+  }
+  .panel h2{ text-align:center }
+  #weeklyChart{ height:300px !important }
+  #allocDonut{ height:300px !important }
+}
+
+
+
+
 
 
 
@@ -288,14 +438,91 @@
     @media (min-width:80em){ .cards{ grid-template-columns:repeat(3,1fr) } }
 
     .card{
-      border:1px solid rgba(255,255,255,.08);
+      border:1px solid #050a14;
       border-radius:14px;
-      background:rgba(255,255,255,.03);
+      background:#050a14;
       padding:1rem;
-      box-shadow:0 10px 26px rgba(0,0,0,.35);
+      box-shadow:0 10px 26px #050a14;
     }
     .card h3{ margin:0 0 .4rem; font-size:1.1rem }
     .card p{ margin:0; opacity:.9 }
+
+    @media (max-width: 768px) {
+  /* On fait déborder uniquement la section chart pour full-bleed */
+  .chart-section {
+    width: 100vw;         /* occupe tout l'écran */
+    margin-left: -50vw;   /* sort du container */
+    left: 50%;
+    position: relative;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .chart-section h2 {
+    text-align: center;   /* titre centré */
+  }
+
+  #tvlChart {
+    width: 100% !important;
+    height: 320px !important; /* plus compact sur mobile */
+    margin-left: 0 !important;
+  }
+}
+/* ====== Second deck : grid 1x2 (empilé sur mobile) ====== */
+.second-deck {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 2rem 0 3rem;
+}
+@media (min-width: 64rem){
+  .second-deck { grid-template-columns: 1fr 1fr; }
+}
+
+.panel .muted {
+  display:block; margin-top:.5rem; opacity:.7; font-size:.85rem;
+}
+
+/* Simulateur */
+.panel-sim .sim-controls{
+  display:grid; grid-template-columns: 1fr 1fr; gap: .75rem 1rem; margin-bottom: 1rem;
+}
+.panel-sim .field { display:flex; align-items:center; gap:.5rem; }
+.panel-sim label { font-size:.9rem; opacity:.9; }
+.panel-sim input{
+  background: linear-gradient(180deg,#0b1220 0%, #131b2a 100%);
+  border:1px solid rgba(255,255,255,.12);
+  color:#E6EEF8; border-radius:8px; padding:.45rem .6rem; width:120px;
+  outline:none;
+}
+.panel-sim input:focus{ border-color:#00B2FF; box-shadow:0 0 0 3px rgba(0,178,255,.15); }
+
+/* Tableau résultat */
+#simTableWrap table{
+  width:100%; border-collapse: collapse; overflow:hidden;
+  border:1px solid rgba(255,255,255,.08); border-radius:12px;
+  background: linear-gradient(180deg, #0b1220 0%, #141922 100%);
+}
+#simTableWrap th, #simTableWrap td{
+  padding:.75rem .9rem; text-align:left; border-bottom:1px solid rgba(255,255,255,.06);
+}
+#simTableWrap thead th{
+  font-size:.85rem; letter-spacing:.3px;
+  background: linear-gradient(127deg, rgba(138,10,255,0.18) 0%, rgba(58,63,255,0.14) 50%, rgba(0,201,232,0.12) 100%);
+}
+#simTableWrap tbody tr:hover{ background: rgba(255,255,255,.03); }
+#simTableWrap td.value { font-weight:700; }
+
+/* Mobile full-bleed comme les autres charts */
+@media (max-width:768px){
+  .second-deck{
+    position: relative; left: 50%; width: 100vw; margin-left: -50vw;
+  }
+  .panel{ border-radius:0; border-left:0; border-right:0; }
+}
+
+
+
   </style>
 </head>
 <body>
@@ -328,10 +555,12 @@
 
   <!-- CONTENU -->
   <main class="container">
-    <section class="hero-perf">
-      <h1>Performance</h1>
-      <p class="intro">Découvrez nos résultats hebdomadaires et suivez l’évolution du fonds en toute transparence.</p>
-    </section>
+  <section id="performance" class="section">
+  <h2>Performance</h2>
+  <p class="subtitle">Découvre nos résultats hebdomadaires et suivez l’évolution du fonds en toute transparence</p>
+  <p class="update-note">Données mises à jour le 29/09/2025</p>
+</section>
+
 
   <!-- Résumé en cartes -->
   <section class="summary-cards">
@@ -367,7 +596,70 @@
   <div id="tvlChart" style="width:100%;height:500px;"></div>
 </section>
 
+<!-- ==== ANALYTICS GRID: Weekly returns (left) + Allocation donut (right) ==== -->
+<section class="analytics-grid">
 
+  <!-- Panel LEFT : Weekly Returns -->
+  <div class="panel panel-weekly">
+    <h2>Rendement hebdomadaires</h2>
+
+    <div class="chart-header">
+      <div class="chart-buttons" id="wr-buttons">
+        <button data-range="3M" class="active">3M</button>
+        <button data-range="6M">6M</button>
+        <button data-range="YTD">YTD</button>
+        <button data-range="ALL">ALL</button>
+      </div>
+    </div>
+
+    <div id="weeklyChart" style="width:100%;height:420px;"></div>
+  </div>
+
+  <!-- Panel RIGHT : Allocation donut (placeholder) -->
+  <div class="panel panel-donut">
+    <h2>Allocation par stratégie</h2>
+    <div id="allocDonut" style="width:100%;height:420px;"></div>
+  </div>
+
+</section>
+<section class="analytics-grid second-deck">
+  <!-- LEFT : Drawdown -->
+  <div class="panel panel-dd">
+  <h2>Drawdown</h2>
+  <!-- ✅ Boutons de période -->
+  <div class="chart-header">
+    <div class="chart-buttons" id="dd-buttons">
+      <button data-range="3M" class="active">3M</button>
+      <button data-range="6M">6M</button>
+      <button data-range="YTD">YTD</button>
+      <button data-range="ALL">ALL</button>
+    </div>
+  </div>
+
+  <div id="ddChart" style="width:100%;height:380px;"></div>
+  <small class="muted">Plus c’est bas, plus la baisse depuis le plus haut est profonde (en %).</small>
+</div>
+
+
+  <!-- RIGHT : Simulateur de capital -->
+  <div class="panel panel-sim">
+    <h2>Simulateur de capital (APY)</h2>
+
+    <div class="sim-controls">
+      <div class="field">
+        <label>Montant initial ($)</label>
+        <input id="simAmount" type="number" min="0" step="10" value="1000">
+      </div>
+      <div class="field">
+        <label>APY (annuel)</label>
+        <input id="simApy" type="number" min="0" step="0.1" value="28"> <span>%</span>
+      </div>
+    </div>
+
+    <div id="simTableWrap"></div>
+    <small class="muted">Hypothèse : capitalisation hebdomadaire, sans dépôts/retraits.</small>
+  </div>
+</section>
 
 
   <!-- FOOTER -->
@@ -396,10 +688,6 @@
           <li><a href="#">Conditions générales</a></li>
           <li><a href="#">Politique de confidentialité</a></li>
         </ul>
-        <div class="social">
-          <a href="#" aria-label="Twitter">Twitter</a>
-          <a href="#" aria-label="LinkedIn">LinkedIn</a>
-        </div>
       </div>
     </div>
     <div class="footer-bottom">© 2025 G12. Tous droits réservés.</div>
@@ -482,6 +770,10 @@
     7476.12, 6193.88, 6415.47, 6523.66,          // Août (≈ -1200)
     7544.29, 7217.53, 7829.41, 7478.22, 7680.37  // Sept
   ];
+  // ✅ expose pour les autres graphiques
+window.allWeeks = allWeeks;
+window.allData  = allData;
+
 
   // ========= Ranges =========
   function getData(range){
@@ -560,6 +852,402 @@
   });
   const def = document.querySelector('.chart-buttons button[data-range="6M"]');
   if (def) def.classList.add('active');
+
+</script>
+<script>
+// --- semaines TVL existantes (venant de ton graphe TVL) ---
+window.allWeeks = window.allWeeks || [
+  '01/04','08/04','15/04','22/04','29/04',
+  '06/05','13/05','20/05','27/05',
+  '03/06','10/06','17/06','24/06',
+  '01/07','08/07','15/07','22/07','29/07',
+  '05/08','12/08','19/08','26/08',
+  '02/09','09/09','16/09','23/09','29/09'
+];
+window.allData = window.allData || []; // si dispo, sert à estimer le $ change
+
+// --- Rendement hebdo fixé (label -> pct) ---
+// (entre -2.48% et +3.89%, + de vert, août 3 semaines rouges)
+const weeklyPctByWeek = {
+  '08/04':  1.12,
+  '15/04':  0.85,
+  '22/04': -0.74,
+  '29/04':  1.96,
+
+  '06/05':  1.36,  // override demandé
+  '13/05':  0.92,
+  '20/05':  1.58,
+  '27/05':  0.44,
+
+  '03/06':  1.21,
+  '10/06':  2.10,
+  '17/06':  1.67,
+  '24/06':  0.93,
+
+  '01/07':  1.34,
+  '08/07':  1.89,
+  '15/07':  0.72,
+  '22/07':  1.15,
+  '29/07': -0.68,
+
+  '05/08': -1.04,
+  '12/08': -2.31,
+  '19/08': -0.88,
+  '26/08': -2.08,
+
+  '02/09':  3.12,
+  '09/09':  2.46,
+  '16/09':  1.73,
+  '23/09':  0.81,
+  '29/09':  1.22
+};
+
+// --- utilitaires ---
+function makeWeeklySeries(weeks, tvlValues){
+  const labels = [], pct = [], abs = [];
+  for (let i=1;i<weeks.length;i++){
+    const w = weeks[i];
+    const p = weeklyPctByWeek[w];
+    if (p == null) continue; // ignore si pas défini
+    labels.push(w);
+    pct.push(+p.toFixed(2));
+    // variation $ estimée si on a la TVL de la semaine précédente
+    if (tvlValues && tvlValues.length === weeks.length) {
+      const prev = tvlValues[i-1];
+      abs.push(+((prev * (p/100))).toFixed(2));
+    } else {
+      abs.push(null);
+    }
+  }
+  return { labels, pct, abs };
+}
+function sliceRange(arr, n){ return n==='ALL' ? arr.slice() : arr.slice(-n); }
+function weeksCountFor(range){
+  if (range==='3M')  return 12;  // ~12 semaines
+  if (range==='6M')  return 26;  // ~26 semaines
+  if (range==='YTD') return 'ALL';
+  return 'ALL';
+}
+
+// --- instance ECharts ---
+const wrDom = document.getElementById('weeklyChart');
+const weeklyChart = echarts.init(wrDom);
+
+// --- rendu ---
+function renderWeekly(range='3M'){
+  const isMobile = matchMedia('(max-width:768px)').matches;
+  const { labels, pct, abs } = makeWeeklySeries(allWeeks, allData);
+  const N = weeksCountFor(range);
+  const L = sliceRange(labels, N);
+  const P = sliceRange(pct, N);
+  const A = sliceRange(abs, N);
+
+// moyenne de la période affichée (en %)
+const avg = P.length ? +(P.reduce((s,v)=>s+v,0) / P.length).toFixed(2) : 0;
+
+// ===== Intensité dépendante de la période affichée =====
+const maxPos = Math.max(0, ...P.filter(v => v > 0));
+const maxNegAbs = Math.max(0, ...P.filter(v => v < 0).map(v => Math.abs(v)));
+
+// fabrique un dégradé vertical en HSL/HSLA, plus le t est grand, plus c'est intense (moins gris)
+function gradByHue(hue, t){
+  // clamp 0..1
+  const k = Math.max(0, Math.min(1, t || 0));
+  // L (lightness) plus faible = plus vif ; plus proche de 60% = plus grisâtres
+  const L = 58 - 18 * k;           // 58% (pâle) → 40% (vif)
+  const S = 85;                    // saturation bien vive
+  const top    = `hsla(${hue}, ${S}%, ${L}%, 1)`;     // haut du bâton
+  const bottom = `hsla(${hue}, ${S}%, ${L}%, 0.35)`;  // bas du bâton (un peu transparent)
+  return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    { offset: 0, color: top },
+    { offset: 1, color: bottom }
+  ]);
+}
+
+// map couleur par valeur (vert pour gains, rouge pour pertes), intensité relative à max local
+function colorFor(v){
+  if (v >= 0) {
+    const t = maxPos > 0 ? (v / maxPos) : 0;   // 0..1
+    return gradByHue(150, t);                  // 150° = vert
+  } else {
+    const t = maxNegAbs > 0 ? (Math.abs(v) / maxNegAbs) : 0; // 0..1
+    return gradByHue(0, t);                    // 0° = rouge
+  }
+}
+  // 4) rendu
+  weeklyChart.setOption({
+    backgroundColor: '#050A14',
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      borderColor: '#00B2FF',
+      textStyle: { color: '#E6EEF8' },
+      formatter: (params) => {
+        const p = params[0], i = p.dataIndex;
+        const sign = P[i] >= 0 ? '+' : '';
+        const line1 = `<strong>Semaine ${L[i]}</strong>`;
+        const line2 = `${sign}${P[i]} %`;
+        const line3 = (A[i] == null) ? `` : `${A[i] >= 0 ? '+' : ''}${A[i]} $`;
+        const lineAvg = `<span style="opacity:.85">Moy (période): ${avg}%</span>`;
+        return [line1, line2, line3, lineAvg].filter(Boolean).join('<br>');
+      }
+    },
+    grid: { left: isMobile ? 8 : 40, right: isMobile ? 8 : 16, top: 18, bottom: 28, containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: L,
+      axisLine: { lineStyle: { color: '#E6EEF8' } },
+      axisLabel: { color: '#E6EEF8', interval: 'auto', hideOverlap: true }
+    },
+    yAxis: {
+      type: 'value',
+      axisLine: { lineStyle: { color: '#E6EEF8' } },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+      axisLabel: { color: '#E6EEF8', formatter: v => v + ' %' }
+    },
+    series: [{
+      name: 'Rendement hebdo',
+      type: 'bar',
+      data: P.map(v => ({
+        value: v,
+        itemStyle: { color: colorFor(v) }   // ✅ intensité dynamique
+      })),
+      barWidth: '60%',
+      markLine: {
+        symbol: 'none',
+        lineStyle: { type: 'dashed', color: '#3A3FFF' },
+        label: { show: false },           // pas d’étiquette, valeur au tooltip
+        data: [{ yAxis: avg }]
+      }
+    }]
+  }, true);
+}
+
+
+// --- boutons 3M/6M/YTD/ALL ---
+document.querySelectorAll('#wr-buttons button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#wr-buttons button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderWeekly(btn.dataset.range);
+  });
+});
+
+// init
+renderWeekly('3M');
+window.addEventListener('resize', ()=> weeklyChart.resize());
+
+// ====== Donut Allocation (placeholder, couleurs G12)
+const donut = echarts.init(document.getElementById('allocDonut'));
+donut.setOption({
+  backgroundColor:'#050A14',
+  tooltip:{ trigger:'item', backgroundColor:'rgba(0,0,0,0.75)', borderColor:'#00B2FF', textStyle:{ color:'#E6EEF8' } },
+  series:[{
+    name:'Allocation',
+    type:'pie',
+    radius:['55%','80%'],
+    avoidLabelOverlap:true,
+    itemStyle:{ borderColor:'#050A14', borderWidth:2 },
+    label:{ color:'#E6EEF8', formatter: '{b}\n{d}%' },
+    data:[
+      { value:38, name:'bitcoin' },
+      { value:24, name:'trading' },
+      { value:18, name:'Arbitrage' },
+      { value:12, name:'Yield' },
+      { value:8,  name:'stable coin' }
+    ],
+    color:['#00C9E8','#3A3FFF','#8A0AFF','#19e68c','#8aa1b1']
+  }]
+});
+window.addEventListener('resize', ()=> donut.resize());
+</script>
+<script>
+// --- utilitaires réutilisés ---
+function weeksCountFor(range){
+  if (range === '3M') return 12;
+  if (range === '6M') return 26;
+  if (range === 'YTD') return 'ALL';
+  return 'ALL';
+}
+function sliceRange(arr, n){ return n === 'ALL' ? arr.slice() : arr.slice(-n); }
+
+// reprend les % hebdo (weeklyPctByWeek) dans l'ordre allWeeks
+function buildWeeklyPctSeries() {
+  const labels = [], pct = [];
+  for (let i=1;i<allWeeks.length;i++){
+    const w = allWeeks[i];
+    if (weeklyPctByWeek[w] == null) continue;
+    labels.push(w);
+    pct.push(+weeklyPctByWeek[w].toFixed(2));
+  }
+  return { labels, pct };
+}
+
+// calcule drawdown depuis un index base 100
+function computeDrawdown(){
+  const { labels, pct } = buildWeeklyPctSeries();
+  const equity = [100];
+  for (let i=0;i<pct.length;i++){
+    equity.push( equity[equity.length-1] * (1 + pct[i]/100) );
+  }
+  equity.shift(); // aligne sur labels
+
+  const dd = [];
+  let peak = -Infinity;
+  for (let i=0;i<equity.length;i++){
+    peak = Math.max(peak, equity[i]);
+    dd.push( ((equity[i]/peak)-1)*100 ); // <= 0
+  }
+  return { labels, dd };
+}
+
+// instance
+const ddEl = document.getElementById('ddChart');
+const ddChart = echarts.init(ddEl);
+
+function renderDrawdown(range='3M'){
+  const isMobile = matchMedia('(max-width:768px)').matches;
+  const { labels, dd } = computeDrawdown();
+  const N = weeksCountFor(range);
+  const L = sliceRange(labels, N);
+  const D = sliceRange(dd, N);
+
+  ddChart.setOption({
+    backgroundColor:'#050A14',
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'cross' },
+      backgroundColor:'rgba(0,0,0,0.75)',
+      borderColor:'#00B2FF',
+      textStyle:{ color:'#E6EEF8' },
+      formatter: (p) => {
+        const v = p[0].data;
+        return `<strong>Semaine ${p[0].axisValue}</strong><br>Drawdown: ${v.toFixed(2)} %`;
+      }
+    },
+    grid:{ left:isMobile?8:40, right:isMobile?8:16, top:18, bottom:28, containLabel:true },
+    xAxis:{ type:'category', data: L,
+      axisLine:{ lineStyle:{ color:'#E6EEF8' } },
+      axisLabel:{ color:'#E6EEF8', interval:'auto', hideOverlap:true }
+    },
+    yAxis:{ type:'value',
+      axisLine:{ lineStyle:{ color:'#E6EEF8' } },
+      splitLine:{ lineStyle:{ color:'rgba(255,255,255,0.05)' } },
+      axisLabel:{ color:'#E6EEF8', formatter:v=> v+' %' }
+    },
+    series:[{
+      name:'Drawdown',
+      type:'line',
+      data: D.map(v=> +v.toFixed(2)),
+      smooth: true,
+      areaStyle:{
+        color: new echarts.graphic.LinearGradient(0,0,0,1,[
+          {offset:0, color:'rgba(255,92,92,.55)'},
+          {offset:1, color:'rgba(255,92,92,0)'}
+        ])
+      },
+      lineStyle:{ width:2, color:'#ff5c5c' },
+      symbol:'none'
+    }]
+  }, true);
+}
+
+// boutons 3M/6M/YTD/ALL
+document.querySelectorAll('#dd-buttons button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#dd-buttons button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderDrawdown(btn.dataset.range);
+  });
+});
+
+// init
+renderDrawdown('3M');
+window.addEventListener('resize', ()=> ddChart.resize());
+</script>
+<script>
+// ====== SIMULATEUR APY ======
+const simAmountEl = document.getElementById('simAmount');
+const simApyEl = document.getElementById('simApy');
+const simTableWrap = document.getElementById('simTableWrap');
+
+function getAPY() {
+  const v = parseFloat(simApyEl.value);
+  return isFinite(v) ? v/100 : 0;
+}
+function fmtUSD(n){ return Number(n).toLocaleString('en-US',{maximumFractionDigits:2}); }
+function project(principal, weeks, apy){
+  const weekly = Math.pow(1+apy, 1/52) - 1;
+  return principal * Math.pow(1 + weekly, weeks);
+}
+function renderSimTable(){
+  const P0  = Math.max(0, parseFloat(simAmountEl.value) || 0);
+  const apy = getAPY();
+  const rows = [
+    { label:'1 mois',  w: 4 },
+    { label:'3 mois',  w: 13 },
+    { label:'6 mois',  w: 26 },
+    { label:'12 mois', w: 52 }
+  ].map(r => {
+    const val = project(P0, r.w, apy);
+    const gain = val - P0;
+    return { ...r, value: val, gain };
+  });
+  simTableWrap.innerHTML = `
+    <table>
+      <thead>
+        <tr><th>Période</th><th>Capital final</th><th>Gain</th></tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.label}</td>
+            <td class="value">$ ${fmtUSD(r.value)}</td>
+            <td style="color:${r.gain>=0?'#19e68c':'#ff5c5c'}">$ ${fmtUSD(r.gain)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+simAmountEl.addEventListener('input', renderSimTable);
+simApyEl.addEventListener('input', renderSimTable);
+renderSimTable();
+</script>
+
+
+<script>
+(function(){
+  const D = document.documentElement;
+  const B = document.body;
+
+  // Quand la page est prête → ajoute la classe pour déclencher le fade-in
+  window.addEventListener('DOMContentLoaded', ()=>{
+    requestAnimationFrame(()=> B.classList.add('page-loaded'));
+  });
+
+  // Assurer que le body reste visible en cas de back/forward cache
+  window.addEventListener('pageshow', ()=> {
+    B.classList.add('page-loaded');
+    D.classList.remove('is-animating');
+  });
+
+  // Capture les clics sur liens internes
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if(!a) return;
+    const url = a.getAttribute('href') || '';
+    // ignorer externes, ancres, mailto, tel...
+    const isExternal = /^https?:\/\//i.test(url) && !url.includes(location.host);
+    const isHash = url.startsWith('#');
+    const newTab = a.target === '_blank';
+    const special = url.startsWith('mailto:') || url.startsWith('tel:') || url.startsWith('javascript:');
+    if (isExternal || isHash || newTab || special) return;
+
+    e.preventDefault();
+    D.classList.add('is-animating'); // déclenche fade-out
+    setTimeout(() => { window.location.href = url; }, 400); // même durée que CSS
+  });
+})();
 </script>
 
 
