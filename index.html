@@ -28,6 +28,27 @@
   --card-bg: rgba(255,255,255,0.05);
   --card-radius: 0.5rem;
 }
+/* --- Transition fade entre pages --- */
+html.is-animating body {
+  opacity: 0;
+  transition: opacity .28s ease; /* durée sortie */
+}
+/* État de base : invisible au chargement */
+body {
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+/* Quand prêt → visible */
+body.page-loaded {
+  opacity: 1;
+}
+
+/* Sortie (clic lien) */
+html.is-animating body {
+  opacity: 0;
+}
+
 
     /* Reset & base */
 /* ---------- FIX OVERFLOW HORIZONTAL (mobile-first) ---------- */
@@ -1353,7 +1374,7 @@ body::before {
   <li><a href="#home">Accueil</a></li>
   <li><a href="#features">Notre produit</a></li>     <!-- ↩︎ vers le carrousel -->
   <li><a href="performance.html">Performance</a></li> <!-- ↩︎ page dédiée -->
-  <li><a href="https://g12.gitbook.io/g12-docs/">Documentation</a></li>
+  <li><a href="documentation.html">Documentation</a></li>
   <li><a href="blog.html">Blog</a></li>
   <li><a href="#footer">Contact</a></li>              <!-- ↩︎ footer -->
   <li><a href="#newsletter" class="btn btn-primary btn-login">S’inscrire</a></li> <!-- ↩︎ newsletter -->
@@ -1980,7 +2001,41 @@ body::before {
   if (first) first.closest('.rmv-item')?.classList.add('is-inview');
 })();
 </script>
+<script>
+(function(){
+  const D = document.documentElement;
+  const B = document.body;
+
+  // Quand la page est prête → ajoute la classe pour déclencher le fade-in
+  window.addEventListener('DOMContentLoaded', ()=>{
+    requestAnimationFrame(()=> B.classList.add('page-loaded'));
+  });
+
+  // Assurer que le body reste visible en cas de back/forward cache
+  window.addEventListener('pageshow', ()=> {
+    B.classList.add('page-loaded');
+    D.classList.remove('is-animating');
+  });
+
+  // Capture les clics sur liens internes
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if(!a) return;
+    const url = a.getAttribute('href') || '';
+    // ignorer externes, ancres, mailto, tel...
+    const isExternal = /^https?:\/\//i.test(url) && !url.includes(location.host);
+    const isHash = url.startsWith('#');
+    const newTab = a.target === '_blank';
+    const special = url.startsWith('mailto:') || url.startsWith('tel:') || url.startsWith('javascript:');
+    if (isExternal || isHash || newTab || special) return;
+
+    e.preventDefault();
+    D.classList.add('is-animating'); // déclenche fade-out
+    setTimeout(() => { window.location.href = url; }, 400); // même durée que CSS
+  });
+})();
+</script>
+
 
 </body>
 </html>
-
