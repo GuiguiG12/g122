@@ -65,6 +65,22 @@ html.is-animating body {
 
     main{padding-top:calc(var(--nav-height) + 1rem)}
 
+    body.performance {
+  background: var(--color-bg);
+}
+body.performance::before {
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgba(102,51,255,.12), transparent 60%),
+    radial-gradient(120% 160% at 0% 100%, rgba(0,178,255,.12), transparent 60%),
+    var(--color-bg);
+  box-shadow: inset 0 0 200px rgba(0,0,0,.4); /* vignette */
+}
+
+
     /* ================= NAVBAR (copie fidèle + anim) ================= */
     nav{
       position:fixed; top:0; left:0; right:0; z-index:5000;
@@ -121,12 +137,38 @@ html.is-animating body {
     }
     .nav-list li a:hover::after{ width:100%; }
 
-    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.5rem .9rem;line-height:1;
-         font-weight:600;border-radius:1.1rem;transition:transform .2s;background:transparent}
-    .btn-primary{background:var(--color-button);color:#fff}
-    .btn-primary:hover{transform:scale(1.05)}
-    .nav-list li .btn-login{align-self:flex-start}
-    .nav-list li .btn-login::after{content:none}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 3rem;       /* ↑ augmente l’air (largeur) */
+  font-weight: 600;
+  border-radius: .7rem;
+  font-size: 1rem;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;             /* pas de bordure parasite */
+}
+
+.btn-primary {
+  background: var(--color-button);
+  color: var(--color-white);
+  transition: transform .2s ease, background .3s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+}
+/* retire le surlignement/soulignement au hover et focus */
+.btn:focus,
+.btn:hover,
+.btn:active {
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
 
     /* Blur du contenu + backdrop cliquable quand menu ouvert */
     body>*:not(nav){transition:filter .3s}
@@ -203,15 +245,15 @@ html.is-animating body {
   min-height: 110px;
 
   /* ✅ fond: noir (haut) -> gris foncé (bas) */
-  background: linear-gradient(180deg, #050a14 0%, #f4f5f70d 100%);
+  background: #00000000;
   border: 0px solid rgba(255, 255, 255, 0);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.511);
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 .summary-cards .card:hover{
   transform: translateY(-4px);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.35);
-  border-color: rgba(255,255,255,0.14);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.63);
+  border-color: rgba(255, 255, 255, 0.421);
 }
 
 /* titre (h3) avec TON dégradé et texte centré */
@@ -246,7 +288,6 @@ html.is-animating body {
   .summary-cards .card{ min-height: 120px; }
 }
 
-
 .chart-header {
   display: flex;
   justify-content: flex-end;
@@ -272,6 +313,14 @@ html.is-animating body {
   border-color: #00B2FF;
   color: #fff;
 }
+.panel{
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  background: transparent;          /* ← plus de fond plein */
+  padding: 1rem;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+
 /* Conteneur du graphique */
 #tvlChart {
   width: 100% !important;
@@ -289,6 +338,8 @@ html.is-animating body {
     padding-right: 0; /* ✅ supprime marges latérales éventuelles */
   }
 }
+
+
 /* ===== TVL : plein écran propre & collé à gauche (mobile only) ===== */
 @media (max-width: 768px) {
   /* on fait sortir la section du padding de .container pour prendre tout l'écran */
@@ -359,7 +410,7 @@ html.is-animating body {
 .panel{
   border:0px solid rgba(255,255,255,0.08);
   border-radius:16px;
-  background: #050a14;
+  background: #'transparent';
   padding:1rem;
 }
 .panel h2{ margin:0 0 .75rem; font-size:1.25rem }
@@ -402,15 +453,17 @@ html.is-animating body {
   #allocDonut{ height:300px !important }
 }
 
-
-
-
-
-
+.sim-intro {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: -0.3rem;
+  margin-bottom: 0.8rem;
+  text-align: left;
+}
 
 
     /* ================== Footer (copie fidèle) ================== */
-    #footer{ background:var(--color-bg); color:var(--color-text); padding:4rem 2rem 2rem; font-size:.875rem; }
+    #footer{ background:'transparent'; color:var(--color-text); padding:4rem 2rem 2rem; font-size:.875rem; }
     .footer-container{ display:flex; flex-direction:column; gap:2rem; max-width:var(--max-width); margin:0 auto; }
     @media (min-width:48em){ .footer-container{ flex-direction:row; justify-content:space-between; align-items:flex-start; } }
     .footer-logo img{ height:2rem }
@@ -508,7 +561,7 @@ html.is-animating body {
 }
 #simTableWrap thead th{
   font-size:.85rem; letter-spacing:.3px;
-  background: linear-gradient(127deg, rgba(138,10,255,0.18) 0%, rgba(58,63,255,0.14) 50%, rgba(0,201,232,0.12) 100%);
+  background: #3b5b95be;
 }
 #simTableWrap tbody tr:hover{ background: rgba(255,255,255,.03); }
 #simTableWrap td.value { font-weight:700; }
@@ -521,11 +574,47 @@ html.is-animating body {
   .panel{ border-radius:0; border-left:0; border-right:0; }
 }
 
+/* Tooltips (même style que index) */
+.tooltip{ position: relative; display: inline-flex; align-items: center; gap: .5rem; }
+.tip-icon{
+  appearance:none; border:1px solid rgba(255,255,255,.25);
+  background:transparent; color:#fff;
+  font:700 .85rem/1 system-ui, -apple-system, "Segoe UI", Inter, Arial, sans-serif;
+  border-radius:999px; width:1.25rem; height:1.25rem;
+  display:grid; place-items:center; cursor:help;
+  transition:border-color .2s, box-shadow .2s;
+}
+.tip-icon:hover, .tip-icon:focus-visible{
+  border-color: rgba(255,255,255,.5);
+  box-shadow: 0 0 0 4px rgba(102,51,255,.12);
+  outline: none;
+}
+.tooltip::after{
+  content: attr(data-tip);
+  position: absolute; left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  bottom: -2.25rem;
+  min-width: 260px; max-width: min(92vw, 560px);
+  padding: .55rem .7rem;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  background: rgba(10,12,16,.95);
+  color: rgba(230,238,248,.95);
+  font: 500 .85rem/1.35 system-ui, -apple-system, "Segoe UI", Inter, Arial, sans-serif;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 10;
+}
+.tooltip:hover::after, .tooltip:focus-within::after{
+  opacity: 1; transform: translateX(-50%) translateY(0);
+}
+
 
 
   </style>
 </head>
-<body>
+<body class="performance">
 
   <!-- NAVBAR -->
   <nav id="navbar">
@@ -583,7 +672,10 @@ html.is-animating body {
   </section>
 
 <section class="chart-section">
-  <h2>Évolution de la TVL</h2>
+<h2 class="tooltip" data-tip="Montant total bloqué dans le fond (Total Value Locked).">
+  Évolution de la TVL
+  <button class="tip-icon" aria-label="Infos sur la TVL">ⓘ</button>
+</h2>
   <div class="chart-header">
     <div class="chart-buttons">
       <button data-range="1M">1M</button>
@@ -601,7 +693,10 @@ html.is-animating body {
 
   <!-- Panel LEFT : Weekly Returns -->
   <div class="panel panel-weekly">
-    <h2>Rendement hebdomadaires</h2>
+<h2 class="tooltip" data-tip="Variation hebdomadaire des rendements du fonds.">
+  Rendement hebdomadaire
+  <button class="tip-icon" aria-label="Infos sur le rendement hebdo">ⓘ</button>
+</h2>
 
     <div class="chart-header">
       <div class="chart-buttons" id="wr-buttons">
@@ -617,7 +712,10 @@ html.is-animating body {
 
   <!-- Panel RIGHT : Allocation donut (placeholder) -->
   <div class="panel panel-donut">
-    <h2>Allocation par stratégie</h2>
+<h2 class="tooltip" data-tip="Répartition du capital entre les différentes stratégies de trading et DeFi.">
+  Allocation par stratégie
+  <button class="tip-icon" aria-label="Infos sur l’allocation">ⓘ</button>
+</h2>
     <div id="allocDonut" style="width:100%;height:420px;"></div>
   </div>
 
@@ -625,7 +723,10 @@ html.is-animating body {
 <section class="analytics-grid second-deck">
   <!-- LEFT : Drawdown -->
   <div class="panel panel-dd">
-  <h2>Drawdown</h2>
+<h2 class="tooltip" data-tip="Drawdown : perte maximale enregistrée depuis le plus haut atteint (mesure du risque).">
+  Drawdown
+  <button class="tip-icon" aria-label="Infos sur le drawdown">ⓘ</button>
+</h2>
   <!-- ✅ Boutons de période -->
   <div class="chart-header">
     <div class="chart-buttons" id="dd-buttons">
@@ -644,6 +745,8 @@ html.is-animating body {
   <!-- RIGHT : Simulateur de capital -->
   <div class="panel panel-sim">
     <h2>Simulateur de capital (APY)</h2>
+    <p class="sim-intro">Entrez un montant et un rendement annuel estimé pour projeter vos gains potentiels.</p>
+
 
     <div class="sim-controls">
       <div class="field">
@@ -787,7 +890,7 @@ window.allData  = allData;
   function render(range){
     const { labels, data } = getData(range);
     const option = {
-      backgroundColor: '#050A14',
+      backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'cross' },
@@ -976,7 +1079,7 @@ function colorFor(v){
 }
   // 4) rendu
   weeklyChart.setOption({
-    backgroundColor: '#050A14',
+    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
@@ -1041,7 +1144,7 @@ window.addEventListener('resize', ()=> weeklyChart.resize());
 // ====== Donut Allocation (placeholder, couleurs G12)
 const donut = echarts.init(document.getElementById('allocDonut'));
 donut.setOption({
-  backgroundColor:'#050A14',
+  backgroundColor:'transparent',
   tooltip:{ trigger:'item', backgroundColor:'rgba(0,0,0,0.75)', borderColor:'#00B2FF', textStyle:{ color:'#E6EEF8' } },
   series:[{
     name:'Allocation',
@@ -1060,6 +1163,19 @@ donut.setOption({
     color:['#00C9E8','#3A3FFF','#8A0AFF','#19e68c','#8aa1b1']
   }]
 });
+function resizeDonut(){
+  const isMobile = window.matchMedia('(max-width:768px)').matches;
+  donut.setOption({
+    series:[{
+      radius: isMobile ? ['45%','70%'] : ['55%','80%']
+    }]
+  });
+  donut.resize();
+}
+
+window.addEventListener('resize', resizeDonut);
+resizeDonut(); // init
+
 window.addEventListener('resize', ()=> donut.resize());
 </script>
 <script>
@@ -1114,7 +1230,7 @@ function renderDrawdown(range='3M'){
   const D = sliceRange(dd, N);
 
   ddChart.setOption({
-    backgroundColor:'#050A14',
+    backgroundColor:'transparent',
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'cross' },
