@@ -22,6 +22,29 @@
       --blur-level:.5rem;
       --container-max:75rem; /* ~1200px */
     }
+
+    /* --- Transition fade entre pages --- */
+html.is-animating body {
+  opacity: 0;
+  transition: opacity .28s ease; /* durée sortie */
+}
+/* État de base : invisible au chargement */
+body {
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+/* Quand prêt → visible */
+body.page-loaded {
+  opacity: 1;
+}
+
+/* Sortie (clic lien) */
+html.is-animating body {
+  opacity: 0;
+}
+
+
     *{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{
@@ -477,5 +500,70 @@
     });
   })();
   </script>
+  <script>
+(function(){
+  // Assurer que le body est visible quand une page est affichée
+  window.addEventListener('pageshow', function(){
+    document.documentElement.classList.remove('is-animating');
+  });
+
+  // Capture les clics sur liens internes
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if(!a) return;
+    const url = a.getAttribute('href') || '';
+    // On ignore les liens externes, ancres, mailto, etc.
+    const isExternal = /^https?:\/\//i.test(url) && !url.includes(location.host);
+    const isHash = url.startsWith('#');
+    const newTab = a.target === '_blank';
+    const special = url.startsWith('mailto:') || url.startsWith('tel:') || url.startsWith('javascript:');
+    if (isExternal || isHash || newTab || special) return;
+
+    e.preventDefault();
+    document.documentElement.classList.add('is-animating');
+    setTimeout(() => { window.location.href = url; }, 280); // durée = transition CSS
+  });
+
+  // Back/forward cache
+  window.addEventListener('popstate', ()=> {
+    document.documentElement.classList.remove('is-animating');
+  });
+})();
+</script>
+<script>
+(function(){
+  const D = document.documentElement;
+  const B = document.body;
+
+  // Quand la page est prête → ajoute la classe pour déclencher le fade-in
+  window.addEventListener('DOMContentLoaded', ()=>{
+    requestAnimationFrame(()=> B.classList.add('page-loaded'));
+  });
+
+  // Assurer que le body reste visible en cas de back/forward cache
+  window.addEventListener('pageshow', ()=> {
+    B.classList.add('page-loaded');
+    D.classList.remove('is-animating');
+  });
+
+  // Capture les clics sur liens internes
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if(!a) return;
+    const url = a.getAttribute('href') || '';
+    // ignorer externes, ancres, mailto, tel...
+    const isExternal = /^https?:\/\//i.test(url) && !url.includes(location.host);
+    const isHash = url.startsWith('#');
+    const newTab = a.target === '_blank';
+    const special = url.startsWith('mailto:') || url.startsWith('tel:') || url.startsWith('javascript:');
+    if (isExternal || isHash || newTab || special) return;
+
+    e.preventDefault();
+    D.classList.add('is-animating'); // déclenche fade-out
+    setTimeout(() => { window.location.href = url; }, 400); // même durée que CSS
+  });
+})();
+</script>
+
 </body>
 </html>
